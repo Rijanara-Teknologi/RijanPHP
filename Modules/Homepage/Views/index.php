@@ -3,38 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You | RijanPHP Framework</title>
+    <title>RijanPHP | Modern, Modular PHP Framework</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         primary: '#2596be',
-                        secondary: '#1a6a8a',
-                        accent: '#34d399',
-                        dark: '#0f172a',
-                        light: '#f8fafc'
+                        dark: '#0a0f1a',
+                        surface: '#111827',
+                        border: 'rgba(255, 255, 255, 0.1)',
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif']
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.8s ease-out forwards'
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' }
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        }
+                        sans: ['Outfit', 'sans-serif']
                     }
                 }
             }
@@ -42,408 +26,209 @@
     </script>
     <style>
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
+            background-color: #0a0f1a;
+            color: #f8fafc;
             overflow-x: hidden;
         }
-        
-        .gradient-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(37, 150, 190, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        
-        .particle {
+        .hero-glow {
             position: absolute;
-            background: rgba(37, 150, 190, 0.3);
-            border-radius: 50%;
-            animation: float 15s infinite linear;
-        }
-        
-        .glow-effect {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.3;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 600px;
+            background: radial-gradient(circle at 50% 0%, rgba(37, 150, 190, 0.15) 0%, transparent 70%);
             z-index: -1;
         }
-        
-        .glow-1 {
-            background: linear-gradient(135deg, #2596be, #34d399);
-            top: -100px;
-            right: -100px;
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .glow-2 {
-            background: linear-gradient(135deg, #34d399, #2596be);
-            bottom: -100px;
-            left: -100px;
+        .glass-card:hover {
+            border-color: rgba(37, 150, 190, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
         }
-        
-        .card-hover {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        
-        .feature-icon {
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover .feature-icon {
-            transform: scale(1.2) rotate(10deg);
-            filter: drop-shadow(0 0 15px rgba(37, 150, 190, 0.5));
-        }
-        
-        .stagger-item {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .stagger-item.visible {
-            animation: fadeIn 0.8s ease-out forwards;
+        .feature-icon-box {
+            background: linear-gradient(135deg, rgba(37, 150, 190, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
+            border: 1px solid rgba(37, 150, 190, 0.2);
         }
     </style>
 </head>
-<body class="font-sans text-gray-100">
-    <!-- Background Effects -->
-    <div class="gradient-bg"></div>
-    <div class="glow-effect glow-1"></div>
-    <div class="glow-effect glow-2"></div>
-    
-    <!-- Particles -->
-    <div class="particles" id="particles"></div>
-    
-    <div class="container mx-auto px-4 py-4 sm:py-6">
-        <!-- Header Section -->
-        <div class="text-center mb-4 stagger-item" style="animation-delay: 0.1s">
-            <div class="inline-block mb-2">
+<body class="antialiased">
+    <div class="hero-glow"></div>
+
+    <!-- Navigation -->
+    <nav class="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
+        <div class="flex items-center space-x-3 group cursor-pointer">
+            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(37,150,190,0.3)] transition-transform group-hover:scale-110">
+                <i class="fas fa-bolt text-white text-xl"></i>
+            </div>
+            <span class="text-2xl font-bold tracking-tight">Rijan<span class="text-primary">PHP</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-400">
+            <a href="#" class="hover:text-white transition-colors">Documentation</a>
+            <a href="#" class="hover:text-white transition-colors">Modules</a>
+            <a href="https://github.com/Rijanara-Teknologi/RijanPHP" target="_blank" class="hover:text-white transition-colors">GitHub</a>
+        </div>
+        <div>
+            <a href="https://github.com/Rijanara-Teknologi/RijanPHP" target="_blank" class="bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-2.5 rounded-full text-sm font-semibold transition-all">
+                v<?= \Teguh02\Rijanphp\Core\Rijan::version() ?>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="max-w-7xl mx-auto px-6 py-12 md:py-20 text-center relative">
+        <div class="inline-flex items-center space-x-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full text-primary text-xs font-bold mb-8 animate-bounce">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
+            <span>RijanPHP v1.0.0 is now stable!</span>
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
+            Build <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">Modular</span> Applications<br>
+            With Elegant Simplicity
+        </h1>
+        
+        <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 leading-relaxed mb-10">
+            A modern PHP framework designed for developers who value performance, 
+            zero-dependency philosophy, and clean architectural patterns.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+            <a href="#" class="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-2xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+                Get Started
+                <i class="fas fa-arrow-right text-sm"></i>
+            </a>
+            <a href="https://github.com/Rijanara-Teknologi/RijanPHP" target="_blank" class="w-full sm:w-auto bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-4 px-10 rounded-2xl transition-all flex items-center justify-center gap-2">
+                <i class="fab fa-github"></i>
+                Star on GitHub
+            </a>
+        </div>
+
+        <!-- Dashboard Preview / Welcome Card -->
+        <div class="max-w-5xl mx-auto glass-card rounded-3xl p-8 md:p-12 relative overflow-hidden text-left mb-20">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-6">Lightweight & Fast</h2>
+                    <p class="text-gray-400 mb-6 leading-relaxed">
+                        RijanPHP is built from the ground up to be incredibly fast. By avoiding heavy dependencies and bloated libraries, your application stays lean and responds in milliseconds.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-sm text-gray-300">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-check text-emerald-400 text-[10px]"></i>
+                            </div>
+                            Zero external core dependencies
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-gray-300">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-check text-emerald-400 text-[10px]"></i>
+                            </div>
+                            Native PHP View Engine
+                        </li>
+                    </ul>
+                </div>
                 <div class="relative">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto">
-                        <i class="fas fa-code text-white text-3xl"></i>
+                    <div class="bg-surface/50 border border-white/5 rounded-2xl p-4 font-mono text-xs text-left shadow-2xl">
+                        <div class="flex space-x-1.5 mb-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500/20"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/20"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-500/20"></div>
+                        </div>
+                        <div class="text-primary-400">Router<span class="text-gray-500">::</span>get<span class="text-gray-300">(</span><span class="text-emerald-400">'/'</span><span class="text-gray-300">, function() {</span></div>
+                        <div class="pl-4 text-emerald-400">return <span class="text-gray-300">view(</span>'welcome'<span class="text-gray-300">);</span></div>
+                        <div class="text-gray-300">}<span class="text-gray-300">);</span></div>
                     </div>
-                    <div class="absolute inset-0 rounded-full bg-primary animate-ping opacity-20"></div>
-                </div>
-            </div>
-            <h1 class="text-3xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-                Thank You!
-            </h1>
-            <p class="text-lg md:text-xl text-gray-300 mb-1">
-                For Choosing
-            </p>
-            <h2 class="text-2xl md:text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary">
-                RijanPHP Framework
-            </h2>
-            <p class="text-base md:text-lg text-gray-400 max-w-xl mx-auto">
-                A simple yet powerful modern PHP framework for building elegant web applications
-            </p>
-        </div>
-        
-        <!-- Main Card - Reduced top/bottom margins -->
-        <div class="max-w-4xl mx-auto mb-4">
-            <div class="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden card-hover">
-                <div class="bg-gradient-to-r from-primary to-accent px-6 py-3">
-                    <div class="flex items-center justify-center">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-rocket text-white text-xl"></i>
-                            <span class="text-white font-semibold">Your Development Journey Starts Here</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-6">
-                    <div class="mb-5">
-                        <h3 class="text-xl font-bold text-white mb-2">Welcome to the RijanPHP Ecosystem!</h3>
-                        <p class="text-gray-200 text-base leading-relaxed mb-2">
-                            You've made an excellent choice. RijanPHP is a modern PHP framework designed for developers who value simplicity without sacrificing power, flexibility, and performance.
-                        </p>
-                        <p class="text-gray-300 text-base leading-relaxed">
-                            Built with a modular architecture and PSR-4 compliance, RijanPHP gives you the freedom to structure your applications exactly how you need while maintaining clean, maintainable code.
-                        </p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                            <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                                        <i class="fas fa-bolt text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-white font-semibold mb-1">High Performance</h4>
-                                    <p class="text-gray-300 text-sm">Optimized for speed and resource efficiency</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                            <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-                                        <i class="fas fa-layer-group text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-white font-semibold mb-1">Modular Architecture</h4>
-                                    <p class="text-gray-300 text-sm">Flexible structure with isolated modules for each feature</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                            <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                                        <i class="fas fa-shield-alt text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-white font-semibold mb-1">Security First</h4>
-                                    <p class="text-gray-300 text-sm">Built-in security best practices and protection</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                            <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-                                        <i class="fas fa-plug text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-white font-semibold mb-1">Seamless Integration</h4>
-                                    <p class="text-gray-300 text-sm">Full Composer compatibility with smooth autoloader transitions</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center py-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-white/10">
-                        <div class="inline-flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                                <i class="fas fa-star text-white"></i>
-                            </div>
-                            <p class="text-gray-200 text-sm italic">
-                                "Simplicity is the ultimate sophistication in development"
-                            </p>
-                        </div>
-                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-primary/20 w-32 h-32 blur-[40px] -z-10"></div>
                 </div>
             </div>
         </div>
-        
-        <!-- Features Grid - Reduced bottom margin -->
-        <div class="max-w-6xl mx-auto mb-4">
-            <div class="text-center mb-4 stagger-item" style="animation-delay: 0.2s">
-                <h3 class="text-2xl font-bold mb-2">Core Features</h3>
-                <p class="text-gray-400 text-sm">A framework built for modern developers</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="feature-card bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 card-hover">
-                    <div class="feature-icon w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-3 mx-auto">
-                        <i class="fas fa-magic text-white text-xl"></i>
+
+        <!-- Features Grid -->
+        <section class="max-w-6xl mx-auto py-12">
+            <h3 class="text-sm font-bold text-primary tracking-[0.2em] uppercase mb-12">Core Foundations</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <!-- Feature 1 -->
+                <div class="glass-card rounded-2xl p-8">
+                    <div class="w-12 h-12 rounded-xl feature-icon-box flex items-center justify-center mb-6">
+                        <i class="fas fa-boxes text-primary"></i>
                     </div>
-                    <h4 class="text-lg font-bold text-center mb-2">Smart Autoloader</h4>
-                    <p class="text-gray-300 text-center text-sm">
-                        PSR-4 compliant autoloader that reads composer.json for seamless Composer integration
+                    <h4 class="text-xl font-bold mb-3">Modular by Design</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Encapsulate your logic into self-contained modules. Each module has its own routes, controllers, and views.
                     </p>
                 </div>
-                
-                <div class="feature-card bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 card-hover">
-                    <div class="feature-icon w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-3 mx-auto">
-                        <i class="fas fa-cubes text-white text-xl"></i>
+                <!-- Feature 2 -->
+                <div class="glass-card rounded-2xl p-8">
+                    <div class="w-12 h-12 rounded-xl feature-icon-box flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-halved text-primary"></i>
                     </div>
-                    <h4 class="text-lg font-bold text-center mb-2">True Modularity</h4>
-                    <p class="text-gray-300 text-center text-sm">
-                        Organize your application with self-contained modules featuring their own MVC structure
+                    <h4 class="text-xl font-bold mb-3">Security Built-in</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Native CSRF protection, encrypted cookies, and secure session handling keep your data safe by default.
                     </p>
                 </div>
-                
-                <div class="feature-card bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 card-hover">
-                    <div class="feature-icon w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-3 mx-auto">
-                        <i class="fas fa-exchange-alt text-white text-xl"></i>
+                <!-- Feature 3 -->
+                <div class="glass-card rounded-2xl p-8">
+                    <div class="w-12 h-12 rounded-xl feature-icon-box flex items-center justify-center mb-6">
+                        <i class="fas fa-database text-primary"></i>
                     </div>
-                    <h4 class="text-lg font-bold text-center mb-2">Composer Compatible</h4>
-                    <p class="text-gray-300 text-center text-sm">
-                        Switch between custom and Composer autoloader without any code changes
-                    </p>
-                </div>
-                
-                <div class="feature-card bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 card-hover">
-                    <div class="feature-icon w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-3 mx-auto">
-                        <i class="fas fa-sliders-h text-white text-xl"></i>
-                    </div>
-                    <h4 class="text-lg font-bold text-center mb-2">Flexible Configuration</h4>
-                    <p class="text-gray-300 text-center text-sm">
-                        Intuitive configuration system that adapts to your project requirements
-                    </p>
-                </div>
-                
-                <div class="feature-card bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 card-hover">
-                    <div class="feature-icon w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-3 mx-auto">
-                        <i class="fas fa-rocket text-white text-xl"></i>
-                    </div>
-                    <h4 class="text-lg font-bold text-center mb-2">Production Ready</h4>
-                    <p class="text-gray-300 text-center text-sm">
-                        Built-in error handling, logging, and optimization for deployment-ready applications
-                    </p>
-                </div>
-                
-                <div class="feature-card bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 card-hover">
-                    <div class="feature-icon w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-3 mx-auto">
-                        <i class="fas fa-book-open text-white text-xl"></i>
-                    </div>
-                    <h4 class="text-lg font-bold text-center mb-2">Comprehensive Docs</h4>
-                    <p class="text-gray-300 text-center text-sm">
-                        Clear documentation with practical examples to accelerate your development workflow
+                    <h4 class="text-xl font-bold mb-3">Fluent ORM</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        A powerful yet simple query builder that supports MySQL, PostgreSQL, and SQLite out of the box.
                     </p>
                 </div>
             </div>
-        </div>
-        
-        <!-- CTA Section -->
-        <div class="max-w-4xl mx-auto mb-4 stagger-item" style="animation-delay: 0.3s">
-            <div class="bg-gradient-to-br from-primary to-accent rounded-xl p-6 text-center">
-                <h3 class="text-xl font-bold text-white mb-2">
-                    Ready to Build Your Next Application?
-                </h3>
-                <p class="text-white/90 text-base mb-4 max-w-xl mx-auto">
-                    Start your new project with RijanPHP and experience the joy of elegant, efficient development
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-3">
-                    <a href="https://github.com/teguh02/rijanphp" target="_blank" class="bg-white text-primary font-bold py-2 px-6 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center shadow-lg">
-                        <i class="fab fa-github mr-2"></i>
-                        GitHub Repository
-                    </a>
-                    <a href="#" class="bg-transparent border-2 border-white text-white font-bold py-2 px-6 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center">
-                        <i class="fas fa-book mr-2"></i>
-                        Documentation
-                    </a>
+        </section>
+
+        <!-- CTA Footer -->
+        <footer class="mt-32 pt-16 border-t border-white/5 pb-16">
+            <div class="grid md:grid-cols-4 gap-12 text-left text-sm">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+                            <i class="fas fa-bolt text-white text-[10px]"></i>
+                        </div>
+                        <span class="text-lg font-bold">RijanPHP</span>
+                    </div>
+                    <p class="text-gray-500 max-w-sm mb-6">
+                        RijanPHP is a modern PHP framework for crafting high-quality applications without the complexity of modern legacy frameworks.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-6 text-white uppercase tracking-wider text-xs">Resources</h5>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="#" class="hover:text-primary transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Starter Guide</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">API Reference</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-6 text-white uppercase tracking-wider text-xs">Community</h5>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="https://github.com/Rijanara-Teknologi/RijanPHP" class="hover:text-primary transition-colors">GitHub Repository</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Contributing</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Discord Server</a></li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        
-        <!-- Footer -->
-        <footer class="text-center text-gray-500 text-xs stagger-item" style="animation-delay: 0.4s">
-            <div class="mb-1">
-                <p class="flex items-center justify-center space-x-1">
-                    <span>Crafted with</span>
-                    <i class="fas fa-heart text-red-500 text-xs"></i>
-                    <span>by</span>
-                    <span class="font-semibold text-primary">Teguh Rijanandi</span>
-                </p>
+            <div class="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between text-gray-500 text-xs gap-4">
+                <p>© 2026 PT Rijanara Inovasi Teknologi. Built for simplicity.</p>
+                <div class="flex items-center space-x-6">
+                    <a href="https://github.com/teguh02" class="hover:text-white"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                </div>
             </div>
-            <div class="flex items-center justify-center space-x-4 mb-2">
-                <a href="https://github.com/teguh02" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                    <i class="fab fa-github text-xl"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                    <i class="fab fa-twitter text-xl"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                    <i class="fab fa-linkedin-in text-xl"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                    <i class="fas fa-globe text-xl"></i>
-                </a>
-            </div>
-            <p>© 2026 RijanPHP Framework. All rights reserved.</p>
-            <p class="text-[10px] mt-1">Simple but Modern PHP Framework</p>
         </footer>
-    </div>
-    
-    <script>
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 12;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random size
-                const size = Math.random() * 35 + 8;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // Random position
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                
-                // Random animation delay and duration
-                particle.style.animationDelay = `${Math.random() * 8}s`;
-                particle.style.animationDuration = `${Math.random() * 15 + 8}s`;
-                
-                // Random opacity
-                particle.style.opacity = `${Math.random() * 0.25 + 0.05}`;
-                
-                particlesContainer.appendChild(particle);
-            }
-        }
-        
-        // Stagger animation on scroll
-        function initStaggerAnimations() {
-            const staggerItems = document.querySelectorAll('.stagger-item');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            
-            staggerItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.05}s`;
-                observer.observe(item);
-            });
-        }
-        
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            initStaggerAnimations();
-            
-            // Add subtle animation to feature cards on hover
-            const featureCards = document.querySelectorAll('.feature-card');
-            featureCards.forEach(card => {
-                const icon = card.querySelector('.feature-icon');
-                card.addEventListener('mouseenter', () => {
-                    icon.style.transform = 'scale(1.2) rotate(10deg)';
-                });
-                card.addEventListener('mouseleave', () => {
-                    icon.style.transform = 'scale(1) rotate(0deg)';
-                });
-            });
-        });
-    </script>
+    </main>
 </body>
 </html>
