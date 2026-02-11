@@ -3,6 +3,8 @@ namespace Teguh02\Rijanphp\Core\Modules;
 
 class Register
 {
+    public static $currentNamespace = null;
+
     /**
      * Initialize module components
      */
@@ -13,20 +15,31 @@ class Register
         string $controllers,
         ?string $helpers = null,
         ?string $middleware = null,
+        ?string $namespace = null,
     ) {
+        if ($namespace === null) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $callerFile = $backtrace[1]['file'] ?? $backtrace[0]['file'];
+            $namespace = strtolower(basename(dirname($callerFile)));
+        }
+
+        self::$currentNamespace = $namespace;
+
         // Load Routes
         if ($routes && file_exists($routes . '/web.php')) {
-            // echo "Loading routes from: " . $routes . '/web.php' . "\n";
             require_once $routes . '/web.php';
-        } else {
-            // echo "No routes found for: " . $routes . "\n";
         }
 
         // Register Views
         if ($views && is_dir($views)) {
-            \Teguh02\Rijanphp\Core\View\View::addPath($views);
+            if ($namespace) {
+                \Teguh02\Rijanphp\Core\View\View::addNamespace($namespace, $views);
+            } else {
+                \Teguh02\Rijanphp\Core\View\View::addPath($views);
+            }
         }
 
+        self::$currentNamespace = null;
         return true;
     }
 }

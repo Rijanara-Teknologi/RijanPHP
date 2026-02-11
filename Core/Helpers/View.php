@@ -5,7 +5,7 @@ use Teguh02\Rijanphp\Core\View\View;
 if (!function_exists('view')) {
     function view($view, $data = [])
     {
-        echo View::render($view, $data);
+        return View::render($view, $data);
     }
 }
 
@@ -40,7 +40,6 @@ if (!function_exists('yield_section')) {
 if (!function_exists('include_view')) {
     function include_view($view, $data = [])
     {
-        // For partials, we use Engine directly to avoid layout recursion logic
-        return View::getEngine()->make($view, $data);
+        return View::render($view, $data);
     }
 }

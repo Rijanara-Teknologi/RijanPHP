@@ -5,6 +5,7 @@ namespace Teguh02\Rijanphp\Core\View;
 class ViewEngine
 {
     protected $paths = [];
+    protected $namespaces = [];
 
     public function __construct()
     {
@@ -16,12 +17,14 @@ class ViewEngine
         $this->paths[] = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * Evaluate the view file and return the content.
-     */
-    public function make($view, $data = [])
+    public function addNamespace($namespace, $path)
     {
-        $viewFile = $this->findView($view);
+        $this->namespaces[$namespace] = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
+    }
+
+    public function make($view, $data = [], $namespace = null)
+    {
+        $viewFile = $this->findView($view, $namespace);
 
         return $this->evaluate($viewFile, $data);
     }
@@ -29,12 +32,40 @@ class ViewEngine
     /**
      * Find the view file path.
      */
-    protected function findView($view)
+    protected function findView($view, $namespace = null)
     {
-        $name = str_replace('.', DIRECTORY_SEPARATOR, $view);
+        // If no explicit namespace, try the provided contextual namespace
+        if (strpos($view, '::') === false && $namespace) {
+            $namespacedView = $namespace . '::' . $view;
+            try {
+                return $this->findView($namespacedView);
+            } catch (\Exception $e) {
+                // Fallback to global search
+            }
+        }
+
+        // Handle explicit namespace
+        if (strpos($view, '::') !== false) {
+            list($ns, $name) = explode('::', $view);
+            $name = str_replace(['.', '/'], DIRECTORY_SEPARATOR, $name);
+
+            if (isset($this->namespaces[$ns])) {
+                $fullPath = $this->namespaces[$ns] . $name . '.php';
+                $fullPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $fullPath);
+
+                if (file_exists($fullPath)) {
+                    return $fullPath;
+                }
+            }
+        }
+
+        // Global search
+        $name = str_replace(['.', '/'], DIRECTORY_SEPARATOR, $view);
 
         foreach (array_reverse($this->paths) as $path) {
             $fullPath = $path . $name . '.php';
+            $fullPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $fullPath);
+
             if (file_exists($fullPath)) {
                 return $fullPath;
             }

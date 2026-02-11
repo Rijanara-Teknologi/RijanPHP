@@ -8,6 +8,7 @@ class View
     protected static $sections = [];
     protected static $sectionStack = [];
     protected static $layout = null;
+    protected static $currentNamespace = null;
 
     public static function getEngine()
     {
@@ -22,17 +23,23 @@ class View
         self::getEngine()->addPath($path);
     }
 
+    public static function addNamespace($namespace, $path)
+    {
+        self::getEngine()->addNamespace($namespace, $path);
+    }
+
+    public static function setCurrentNamespace($namespace)
+    {
+        self::$currentNamespace = $namespace;
+    }
+
     /**
      * Render the view. 
      * If the view extends a layout, it will recursively render the layout.
      */
     public static function render($view, $data = [])
     {
-        // Reset state for a fresh top-level render if needed
-        // Note: sections are NOT reset for nested includes, but we want a clean start for new responses.
-        // Actually, since this is a persistent process in some envs, we should be careful.
-
-        $content = self::getEngine()->make($view, $data);
+        $content = self::getEngine()->make($view, $data, self::$currentNamespace);
 
         if (self::$layout) {
             $layout = self::$layout;

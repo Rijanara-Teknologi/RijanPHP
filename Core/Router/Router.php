@@ -19,6 +19,16 @@ class Router
         return self::add('POST', $uri, $action);
     }
 
+    public static function put($uri, $action)
+    {
+        return self::add('PUT', $uri, $action);
+    }
+
+    public static function delete($uri, $action)
+    {
+        return self::add('DELETE', $uri, $action);
+    }
+
     /**
      * Create a route group.
      */
@@ -60,7 +70,8 @@ class Router
             'uri' => $uri,
             'action' => $action,
             'middleware' => $middleware,
-            'name' => null
+            'name' => null,
+            'namespace' => \Teguh02\Rijanphp\Core\Modules\Register::$currentNamespace
         ];
 
         return new class {
@@ -138,7 +149,11 @@ class Router
         if ($requestUri === '')
             $requestUri = '/';
 
-        return $routeUri === $requestUri;
+        // Convert {param} to regex group
+        $pattern = preg_replace('/\{[a-zA-Z0-9_]+\}/', '([^/]+)', $routeUri);
+        $pattern = "#^" . $pattern . "$#";
+
+        return preg_match($pattern, $requestUri);
     }
 
     protected static function execute($route, $request)
@@ -146,19 +161,33 @@ class Router
         $action = $route['action'];
         $middleware = $route['middleware'];
 
-        // Simple middleware execution (Wait for Middleware class/logic)
-        // For now, let's just run the action with Request injection.
+        // Extract parameters
+        $params = [];
+        $routeUri = rtrim($route['uri'], '/');
+        if ($routeUri === '')
+            $routeUri = '/';
+
+        $pattern = preg_replace('/\{[a-zA-Z0-9_]+\}/', '([^/]+)', $routeUri);
+        $pattern = "#^" . $pattern . "$#";
+
+        if (preg_match($pattern, rtrim($request->uri(), '/'), $matches)) {
+            array_shift($matches); // Remove full match
+            $params = $matches;
+        }
 
         if (is_array($action)) {
             $controllerClass = $action[0];
             $method = $action[1];
 
+            \Teguh02\Rijanphp\Core\View\View::setCurrentNamespace($route['namespace'] ?? null);
+
             $controller = new $controllerClass($request);
-            return call_user_func([$controller, $method]);
+            return call_user_func_array([$controller, $method], $params);
         }
 
         if (is_callable($action)) {
-            return call_user_func($action, $request);
+            \Teguh02\Rijanphp\Core\View\View::setCurrentNamespace($route['namespace'] ?? null);
+            return call_user_func_array($action, array_merge([$request], $params));
         }
     }
 

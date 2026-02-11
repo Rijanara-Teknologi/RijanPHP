@@ -51,11 +51,17 @@ All notable changes to the **RijanPHP** framework will be documented in this fil
 - **Module Registration**:
   - Updated `Core\Modules\Register::init` to automatically load `routes/web.php` from modules.
   - Updated `Core\Modules\Executor::Run` to bootstrap modules via config before dispatching routes.
+- **Modular View System**:
+  - Implemented **Context-Aware View Namespacing** to resolve naming collisions between modules.
+  - Added support for `::` namespace notation in `ViewEngine` and `View` classes.
+  - Implemented **Automatic Namespace Detection** in `Register::init` using `debug_backtrace`, enabling zero-config module registration.
+  - Refactored `View` engine and `include_view` helper to maintain modular context across layouts and partials.
 - **Autoloader**:
   - Enhanced `Core\Autoload\Autoloader` to support new directory structure.
   - Added automatic helper file loading in `Core\Rijan`.
 
 ### Fixed
+- Resolved route and view collision between `Homepage` and `Product` modules where the root route `/` was shadowed by module views.
 - Fixed 404 error caused by modules not being bootstrapped before routing.
 - Fixed CLrf/array key warnings in CLI environment.
 

@@ -25,6 +25,9 @@ abstract class TestCase extends BaseTestCase
 
         // Initialize response
         $this->response = new Response();
+
+        // Load modules to register routes
+        config('modules');
     }
 
     protected function createTestUser(array $data = []): array
