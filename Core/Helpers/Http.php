@@ -49,3 +49,13 @@ if (!function_exists('back')) {
         return redirect($url, $status);
     }
 }
+
+if (!function_exists('http')) {
+    /**
+     * Create a new HTTP Client instance.
+     */
+    function http(array $options = [])
+    {
+        return new \Teguh02\Rijanphp\Core\Http\Client($options);
+    }
+}

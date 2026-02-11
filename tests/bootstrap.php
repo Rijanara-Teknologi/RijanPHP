@@ -5,6 +5,7 @@ define('RIJAN_TEST', true);
 
 // Set base path
 $basePath = dirname(__DIR__);
+define('BASE_PATH', $basePath);
 
 // Load autoloader
 if (file_exists($basePath . '/vendor/autoload.php')) {

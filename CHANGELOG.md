@@ -10,6 +10,18 @@ All notable changes to the **RijanPHP** framework will be documented in this fil
   - Implemented `Core\Http\Response` for standardized output (JSON, Redirect, HTML status).
   - Added base `Core\Controller\Controller` with Request injection and utility methods.
   - Added global HTTP helpers: `request()`, `response()`, `redirect()`, `back()`.
+- **HTTP Client Library**:
+  - Implemented a minimalist, Guzzle-inspired HTTP client (`Core\Http\Client`) using PHP cURL.
+  - Supports standard HTTP methods: `get()`, `post()`, `put()`, `patch()`, `delete()`.
+  - Feature-rich request options: `json`, `form_params`, `query`, `headers`, `auth`, `timeout`.
+  - Standardized response handling via `Core\Http\ClientResponse` with `json()`, `status()`, and `successful()` utilities.
+  - Added global `http()` helper function for fluent API interaction.
+- **Security & Storage Services**:
+  - Implemented `Core\Storage\Storage` for Laravel-style file management with local disk support.
+  - Implemented `Core\Security\Hash` for secure Bcrypt password hashing.
+  - Implemented `Core\Security\Encrypter` for AES-256-CBC encryption using `APP_KEY`.
+  - Added global helpers: `storage()`, `bcrypt()`, `hash_make()`, `encrypt()`, `decrypt()`.
+  - Refactored `CookieManager` to use the centralized `Encrypter` service.
 - **Advanced Routing**:
   - Added **Route Groups** support for prefixing and middleware shared across multiple routes.
   - Implemented Middleware stacking for routes and groups.
