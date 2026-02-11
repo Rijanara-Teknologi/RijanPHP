@@ -47,8 +47,10 @@ function setupTestDatabase()
 
     // Define column types based on driver
     $dateTimeType = 'DATETIME';
+    $boolFalse = '0';
     if ($driver === 'pgsql') {
         $dateTimeType = 'TIMESTAMP';
+        $boolFalse = 'FALSE';
     }
 
     // Create test tables
@@ -67,9 +69,9 @@ function setupTestDatabase()
         user_id INTEGER,
         title VARCHAR(255) NOT NULL,
         content TEXT,
-        published BOOLEAN DEFAULT 0,
+        published BOOLEAN DEFAULT $boolFalse,
         created_at $dateTimeType DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )");
 
     // Insert seed data
