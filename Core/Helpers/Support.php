@@ -56,7 +56,7 @@ if (!function_exists('config')) {
         $parts = explode('.', $key);
         $file = array_shift($parts);
 
-        $path = \Teguh02\Rijanphp\Core\Rijan::$instance->base_path('config/' . $file . '.php');
+        $path = base_path('config/' . $file . '.php');
 
         if (!file_exists($path)) {
             return $default;
@@ -77,5 +77,31 @@ if (!function_exists('config')) {
         }
 
         return $config;
+    }
+}
+
+if (!function_exists('base_path')) {
+    /**
+     * Get the horizontal base path.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function base_path($path = '')
+    {
+        return \Teguh02\Rijanphp\Core\Rijan::$instance->base_path($path);
+    }
+}
+
+if (!function_exists('storage_path')) {
+    /**
+     * Get the storage path.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function storage_path($path = '')
+    {
+        return base_path('storage/' . $path);
     }
 }

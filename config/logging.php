@@ -9,7 +9,7 @@ return [
     'channels' => [
         'single' => [
             'driver' => 'single',
-            'path' => Rijan::$instance->base_path('storage/logs/rijanphp.log'),
+            'path' => storage_path('logs/rijanphp.log'),
             'level' => 'debug',
         ],
     ],

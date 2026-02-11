@@ -48,14 +48,18 @@ class Rijan
      */
     public function base_path(?string $path = null)
     {
-        if (is_null($path)) {
-            return $this->base_path;
+        if (is_null($this->base_path)) {
+            if (is_null($path)) {
+                return null;
+            }
+            $this->base_path = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
+            $this->loadEnv();
+            $this->loadHelpers();
+            return $this;
         }
 
-        $this->base_path = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
-        $this->loadEnv();
-        $this->loadHelpers();
-        return $this;
+        $path = $path ? ltrim($path, '/\\') : '';
+        return $this->base_path . $path;
     }
 
     /**
