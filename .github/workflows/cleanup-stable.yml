@@ -18,6 +18,7 @@ jobs:
       - name: Cleanup non-core files
         run: |
           rm -rf tests/
+          rm -rf storage/
           rm -f composer.lock
           rm -f Makefile
           rm -f phpunit.xml
