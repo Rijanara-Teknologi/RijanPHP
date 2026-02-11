@@ -7,13 +7,7 @@ use Teguh02\Rijanphp\Core\Http\Request;
 
 class ProductModuleTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Ensure static routes are cleared/re-registered if needed
-        // For feature tests, we rely on the framework bootstrap to load modules
-    }
+    // setUp handled by parent
 
     public function testProductListRoute(): void
     {

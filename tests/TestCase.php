@@ -28,6 +28,9 @@ abstract class TestCase extends BaseTestCase
         // Initialize response
         $this->response = new Response();
 
+        // Ensure clean router state
+        \Teguh02\Rijanphp\Core\Router\Router::clear();
+
         // Load modules to register routes
         config('modules');
     }

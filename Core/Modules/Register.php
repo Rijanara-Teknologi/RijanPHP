@@ -27,7 +27,7 @@ class Register
 
         // Load Routes
         if ($routes && file_exists($routes . '/web.php')) {
-            require_once $routes . '/web.php';
+            require $routes . '/web.php';
         }
 
         // Register Views
