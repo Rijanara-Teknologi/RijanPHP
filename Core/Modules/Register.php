@@ -14,14 +14,16 @@ class Register
         string $models,
         string $controllers,
         ?string $helpers = null,
-        ?string $middleware = null,
         ?string $namespace = null,
     ) {
         if ($namespace === null) {
-            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-            $callerFile = $backtrace[1]['file'] ?? $backtrace[0]['file'];
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+            $callerFile = $backtrace[0]['file'];
             $namespace = strtolower(basename(dirname($callerFile)));
         }
+
+        // Debug namespace detection
+        error_log("Register::init - Namespace: " . ($namespace ?? 'NULL') . " for caller: " . ($callerFile ?? 'UNKNOWN'));
 
         self::$currentNamespace = $namespace;
 
