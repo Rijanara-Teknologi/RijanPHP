@@ -34,7 +34,7 @@ class VerifyCsrfToken
      */
     protected function isReading($request)
     {
-        return in_array($request['server']['REQUEST_METHOD'], ['HEAD', 'GET', 'OPTIONS']);
+        return in_array($request['server']['REQUEST_METHOD'] ?? 'GET', ['HEAD', 'GET', 'OPTIONS']);
     }
 
     /**

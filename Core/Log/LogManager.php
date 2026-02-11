@@ -25,7 +25,7 @@ class LogManager
 
     public function channel($name = null)
     {
-        $name = $name ?: $this->config['default'];
+        $name = $name ?: ($this->config['default'] ?? 'single');
 
         if (!isset($this->channels[$name])) {
             $this->channels[$name] = $this->createChannel($name);
@@ -36,7 +36,11 @@ class LogManager
 
     protected function createChannel($name)
     {
-        $config = $this->config['channels'][$name];
+        $config = $this->config['channels'][$name] ?? null;
+
+        if (!$config) {
+            throw new \Exception("Log channel [{$name}] not configured.");
+        }
 
         switch ($config['driver']) {
             case 'single':

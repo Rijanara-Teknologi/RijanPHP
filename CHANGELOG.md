@@ -45,38 +45,37 @@ All notable changes to the **RijanPHP** framework will be documented in this fil
   - Fixed various core bugs in `Request`, `Response`, and `Database` revealed by the testing suite.
   - Added `Makefile` for developer workflow and **GitHub Actions** for CI/CD.
 
-### Changed
-- **Lifecycle Refactor**:
-  - Updated `Core\Rijan::run` to manage the complete Request-Response loop.
-  - Standardized PDO fetch mode to `FETCH_ASSOC` across drivers for consistency.
-- **View modurality**:
-  - Removed centralized `config/view.php`.
-  - Views are now resolved dynamically from modules registered via `Core\Modules\Register`.
-- **Core Improvements**:
-  - Refactored `Core\Rijan` to load helpers dynamically during `base_path` initialization.
-  - Added `$db` and `$log` properties to `Rijan` core for easier access.
+- **Error Handling & Professional Pages**:
+  - Implemented `Core\Exception\Handler` for global, high-reliability error and exception management.
+  - Added minimalist and professional **404 Page Not Found** view with Tailwind CSS.
+  - Added premium **500 Server Error** view with dynamic **Debug Mode** support.
+  - Feature: **Copy Error** button in 500 debug view to copy stack traces and exception details to clipboard.
+  - Automated output buffer clearing and view state resetting in `Handler::render` for stable error reporting even within crashed views.
+  - Registered `core::` view namespace for framework internal assets.
 
 ### Changed
+- **Lifecycle Refactor**:
+  - Updated `Core\Rijan::run` to manage the complete Request-Response loop and bootstrap the global error handler.
+  - Standardized PDO fetch mode to `FETCH_ASSOC` across drivers for consistency.
 - **Directory Structure & PSR-4 Compliance**:
   - Renamed root directories to PascalCase: `core` -> `Core`, `master` -> `Master`, `modules` -> `Modules`.
   - Updated namespace declarations across the framework to match PSR-4 standards (e.g., `Teguh02\Rijanphp\Core`).
-  - Updated `composer.json` autoload mappings.
 - **Module Registration**:
   - Updated `Core\Modules\Register::init` to automatically load `routes/web.php` from modules.
   - Updated `Core\Modules\Executor::Run` to bootstrap modules via config before dispatching routes.
 - **Modular View System**:
   - Implemented **Context-Aware View Namespacing** to resolve naming collisions between modules.
   - Added support for `::` namespace notation in `ViewEngine` and `View` classes.
-  - Implemented **Automatic Namespace Detection** in `Register::init` using `debug_backtrace`, enabling zero-config module registration.
-  - Refactored `View` engine and `include_view` helper to maintain modular context across layouts and partials.
-- **Autoloader**:
-  - Enhanced `Core\Autoload\Autoloader` to support new directory structure.
-  - Added automatic helper file loading in `Core\Rijan`.
+  - Implemented **Automatic Namespace Detection** in `Register::init` using `debug_backtrace`.
 
 ### Fixed
-- Resolved route and view collision between `Homepage` and `Product` modules where the root route `/` was shadowed by module views.
-- Fixed 404 error caused by modules not being bootstrapped before routing.
-- Fixed CLrf/array key warnings in CLI environment.
+- **Stability**:
+  - Added defensive checks in `LogManager` and `VerifyCsrfToken` to prevent crashes during early request lifecycle.
+  - Fixed 500 error page rendering failures by automatically clearing output buffers and resetting `View` state.
+- **Routing**:
+  - Resolved route and view collision between `Homepage` and `Product` modules where the root route `/` was shadowed by module views.
+  - Fixed 404 error caused by modules not being bootstrapped before routing.
+- Resolved "Access denied" string issues in CLI environment by ensuring the `RIJANPHP` protection is appropriately handled.
 
 ## [1.0.0] - Initial Release
 - Basic MVC structure.

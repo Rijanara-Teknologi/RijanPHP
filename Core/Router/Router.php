@@ -141,12 +141,16 @@ class Router
         $method = $request->method();
 
         foreach (self::$routes as $route) {
-            if ($route['method'] === $method && self::match($route['uri'], $uri)) {
+            $isMatch = self::match($route['uri'], $uri);
+
+            if ($route['method'] === $method && $isMatch) {
                 return self::execute($route, $request);
             }
         }
 
-        echo "404 Not Found - Modular Router";
+        http_response_code(404);
+        echo \Teguh02\Rijanphp\Core\View\View::render('core::errors.404');
+        return;
     }
 
     protected static function match($routeUri, $requestUri)

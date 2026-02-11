@@ -38,11 +38,9 @@ class ViewEngine
         if (strpos($view, '::') === false && $namespace) {
             $namespacedView = $namespace . '::' . $view;
             try {
-                error_log("ViewEngine: Trying contextual lookup: $namespacedView");
                 return $this->findView($namespacedView);
             } catch (\Exception $e) {
                 // Fallback to global search
-                error_log("ViewEngine: Contextual lookup failed for $namespacedView");
             }
         }
 

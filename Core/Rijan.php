@@ -165,6 +165,12 @@ class Rijan
         // Initialize Request
         \Teguh02\Rijanphp\Core\Http\Request::$instance = new \Teguh02\Rijanphp\Core\Http\Request();
 
+        // Register core view namespace
+        \Teguh02\Rijanphp\Core\View\View::addNamespace('core', $this->base_path('Core/Views'));
+
+        // Bootstrap Error/Exception Handler
+        \Teguh02\Rijanphp\Core\Exception\Handler::register();
+
         // Initialize Database Manager
         $this->db = \Teguh02\Rijanphp\Core\Database\DatabaseManager::getInstance();
 
