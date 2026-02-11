@@ -19,6 +19,11 @@ $rijan = new \Teguh02\Rijanphp\Core\Rijan();
 $rijan->base_path($basePath)
     ->config($basePath . '/config');
 
+// Ensure APP_KEY is set for tests
+if (empty(getenv('APP_KEY'))) {
+    putenv('APP_KEY=base64:' . base64_encode(random_bytes(32)));
+}
+
 // Setup test database
 setupTestDatabase();
 

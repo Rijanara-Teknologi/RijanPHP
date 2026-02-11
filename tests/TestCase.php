@@ -16,8 +16,10 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // Use a clean memory database for each test if needed, 
-        // but bootstrap already does it. Let's just reset or reuse.
+        // Ensure APP_KEY is set for tests if not provided in env/config
+        if (empty(env('APP_KEY'))) {
+            putenv('APP_KEY=base64:' . base64_encode(random_bytes(32)));
+        }
         $this->db = db();
 
         // Initialize request

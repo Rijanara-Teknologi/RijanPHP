@@ -9,6 +9,16 @@ class Router
     protected static $groupStack = [];
     protected static $namedRoutes = [];
 
+    /**
+     * Clear all registered routes.
+     */
+    public static function clear()
+    {
+        self::$routes = [];
+        self::$groupStack = [];
+        self::$namedRoutes = [];
+    }
+
     public static function get($uri, $action)
     {
         return self::add('GET', $uri, $action);
@@ -159,7 +169,17 @@ class Router
     protected static function execute($route, $request)
     {
         $action = $route['action'];
-        $middleware = $route['middleware'];
+        $middlewareList = $route['middleware'];
+
+        // Execute route-specific middleware
+        foreach ($middlewareList as $middlewareClass) {
+            if (class_exists($middlewareClass)) {
+                $m = new $middlewareClass();
+                if (method_exists($m, 'handle')) {
+                    $m->handle();
+                }
+            }
+        }
 
         // Extract parameters
         $params = [];

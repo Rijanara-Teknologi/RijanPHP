@@ -24,6 +24,7 @@ All notable changes to the **RijanPHP** framework will be documented in this fil
   - Refactored `CookieManager` to use the centralized `Encrypter` service.
 - **Advanced Routing**:
   - Added **Route Groups** support for prefixing and middleware shared across multiple routes.
+  - Implemented **Route-Level Middleware Execution** in `Router` to enforce security policies.
   - Implemented Middleware stacking for routes and groups.
   - Enhanced Router dispatching to inject `Request` and capture `Response` objects.
 - **Multi-Database Support**:
