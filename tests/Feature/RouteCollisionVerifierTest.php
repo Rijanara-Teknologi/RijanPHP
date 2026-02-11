@@ -73,7 +73,45 @@ class RouteCollisionVerifierTest extends TestCase
 
         if ($patternA === $patternB && $uriA !== $uriB) {
             // e.g. /product/{id} vs /product/{slug} -> Collision!
-            $this->fail("Route Collision Detected: [{$method}] '{$uriA}' and '{$uriB}' are essentially the same pattern.");
+            $this->fail("Route Collision Detected: [{$method}] '{$uriA}' and '{$uriB}' match the same pattern: {$patternA}");
+        }
+    }
+
+    /**
+     * Test actual route responses to ensure correct views are rendered.
+     */
+    public function test_route_responses_contain_expected_content()
+    {
+        $testCases = [
+            '/' => 'RijanPHP v1.0.0 is now stable!',
+            '/products' => 'Our Products',
+        ];
+
+        foreach ($testCases as $uri => $expectedContent) {
+            // Mock Request for this URI
+            $_SERVER['REQUEST_METHOD'] = 'GET';
+            $_SERVER['REQUEST_URI'] = $uri;
+
+            // Re-instantiate Request to pick up new globals
+            $request = new \Teguh02\Rijanphp\Core\Http\Request();
+            \Teguh02\Rijanphp\Core\Http\Request::$instance = $request;
+
+            // Clear view state between requests for test isolation
+            \Teguh02\Rijanphp\Core\View\View::clear();
+
+            ob_start();
+            $result = Router::dispatch();
+            // Some routes might return strings, others might echo. We handle both.
+            if ($result) {
+                echo $result;
+            }
+            $output = ob_get_clean();
+
+            $this->assertStringContainsString(
+                $expectedContent,
+                $output,
+                "Route [GET] {$uri} failed to return expected content: '{$expectedContent}'. \nOutput sample: " . substr($output, 0, 200) . "..."
+            );
         }
     }
 }

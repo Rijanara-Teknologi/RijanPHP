@@ -22,8 +22,6 @@ class Register
             $namespace = strtolower(basename(dirname($callerFile)));
         }
 
-        // Debug namespace detection
-        error_log("Register::init - Namespace: " . ($namespace ?? 'NULL') . " for caller: " . ($callerFile ?? 'UNKNOWN'));
 
         self::$currentNamespace = $namespace;
 

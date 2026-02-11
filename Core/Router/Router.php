@@ -141,7 +141,9 @@ class Router
         $method = $request->method();
 
         foreach (self::$routes as $route) {
-            if ($route['method'] === $method && self::match($route['uri'], $uri)) {
+            $isMatch = self::match($route['uri'], $uri);
+
+            if ($route['method'] === $method && $isMatch) {
                 return self::execute($route, $request);
             }
         }

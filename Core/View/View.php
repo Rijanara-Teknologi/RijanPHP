@@ -77,4 +77,15 @@ class View
     {
         return isset(self::$sections[$name]) ? trim(self::$sections[$name]) : $default;
     }
+
+    /**
+     * Clear all registered sections and state. (For testing)
+     */
+    public static function clear()
+    {
+        self::$sections = [];
+        self::$sectionStack = [];
+        self::$layout = null;
+        self::$currentNamespace = null;
+    }
 }
