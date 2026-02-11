@@ -1,5 +1,5 @@
 <?php
-namespace Rijanphp\Modules\Homepage\Controllers;
+namespace Teguh02\Rijanphp\Modules\Homepage\Controllers;
 
 use Teguh02\Rijanphp\Core\Controller\Controller;
 

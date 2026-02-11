@@ -1,6 +1,6 @@
 <?php
 
-use Rijanphp\Modules\Homepage\Controllers\IndexController;
+use Teguh02\Rijanphp\Modules\Homepage\Controllers\IndexController;
 use Teguh02\Rijanphp\Core\Router\Router;
 
 Router::get('/', [IndexController::class, 'index'])->name('home');

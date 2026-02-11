@@ -1,5 +1,5 @@
 <?php
-namespace Rijanphp\Modules\Homepage;
+namespace Teguh02\Rijanphp\Modules\Homepage;
 
 class HomePage
 {

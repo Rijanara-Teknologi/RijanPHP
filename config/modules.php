@@ -1,6 +1,6 @@
 <?php defined('RIJANPHP') or die('Access denied.');
 
-use Rijanphp\Modules\Homepage\HomePage;
+use Teguh02\Rijanphp\Modules\Homepage\HomePage;
 
 return [
     'modules' => \Teguh02\Rijanphp\Core\Modules\Module::load(
