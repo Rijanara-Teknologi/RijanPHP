@@ -23,38 +23,54 @@ setupTestDatabase();
 
 function setupTestDatabase()
 {
-    $dbFile = ':memory:';
+    // Detect driver from environment or fallback
+    $driver = getenv('DB_CONNECTION') ?: 'sqlite';
+    $dbName = getenv('DB_DATABASE') ?: ':memory:';
 
-    // Configure test database
-    $manager = \Teguh02\Rijanphp\Core\Database\DatabaseManager::getInstance();
-
-    // We can't easily inject dynamic config into the manager's config array without a helper or reflection
-    // but we can set env vars which the config uses
-    putenv("DB_CONNECTION=sqlite");
-    putenv("DB_DATABASE=" . $dbFile);
+    // Set environment for config() helper
+    putenv("DB_CONNECTION=$driver");
+    putenv("DB_DATABASE=$dbName");
 
     $db = db();
 
+    // Drop tables if they exist (for non-memory dbs)
+    $db->query('DROP TABLE IF EXISTS posts');
+    $db->query('DROP TABLE IF EXISTS users');
+
+    // Define ID column based on driver
+    $idCol = 'id INTEGER PRIMARY KEY AUTOINCREMENT';
+    if ($driver === 'mysql') {
+        $idCol = 'id INT AUTO_INCREMENT PRIMARY KEY';
+    } elseif ($driver === 'pgsql') {
+        $idCol = 'id SERIAL PRIMARY KEY';
+    }
+
+    // Define column types based on driver
+    $dateTimeType = 'DATETIME';
+    if ($driver === 'pgsql') {
+        $dateTimeType = 'TIMESTAMP';
+    }
+
     // Create test tables
-    $db->query('CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    $db->query("CREATE TABLE users (
+        $idCol,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         age INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        deleted_at DATETIME NULL
-    )');
+        created_at $dateTimeType DEFAULT CURRENT_TIMESTAMP,
+        updated_at $dateTimeType DEFAULT CURRENT_TIMESTAMP,
+        deleted_at $dateTimeType NULL
+    )");
 
-    $db->query('CREATE TABLE posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    $db->query("CREATE TABLE posts (
+        $idCol,
         user_id INTEGER,
         title VARCHAR(255) NOT NULL,
         content TEXT,
         published BOOLEAN DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at $dateTimeType DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
-    )');
+    )");
 
     // Insert seed data
     $db->table('users')->insert([
