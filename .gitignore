@@ -1,0 +1,11 @@
+/vendor/
+/.env
+/.phpunit.cache/
+/tests/coverage/
+/storage/logs/*.log
+/storage/cache/*
+/storage/framework/views/*.php
+.DS_Store
+*.txt
+phpunit_error.txt
+test_*.php

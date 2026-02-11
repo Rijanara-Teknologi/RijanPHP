@@ -1,0 +1,28 @@
+{
+    "name": "teguh02/rijanphp",
+    "description": "A modern, modular, and zero-dependency PHP framework designed for simplicity.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Teguh02\\Rijanphp\\Modules\\": "Modules/",
+            "Teguh02\\Rijanphp\\Master\\": "Master/",
+            "Teguh02\\Rijanphp\\Core\\": "Core/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Teguh02\\Rijanphp\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Teguh Rijanandi",
+            "email": "teguhrijanandi02@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    }
+}

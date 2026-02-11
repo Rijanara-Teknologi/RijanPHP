@@ -1,0 +1,64 @@
+# Changelog
+
+All notable changes to the **RijanPHP** framework will be documented in this file.
+
+## [1.3.0] - 2026-02-11
+
+### Added
+- **HTTP & Controller Layer**:
+  - Implemented `Core\Http\Request` for centralized input (`GET`, `POST`, `FILES`, JSON) and server data handling.
+  - Implemented `Core\Http\Response` for standardized output (JSON, Redirect, HTML status).
+  - Added base `Core\Controller\Controller` with Request injection and utility methods.
+  - Added global HTTP helpers: `request()`, `response()`, `redirect()`, `back()`.
+- **Advanced Routing**:
+  - Added **Route Groups** support for prefixing and middleware shared across multiple routes.
+  - Implemented Middleware stacking for routes and groups.
+  - Enhanced Router dispatching to inject `Request` and capture `Response` objects.
+- **Multi-Database Support**:
+  - Refactored database connections to use a driver-agnostic `Core\Database\PdoConnection` base class.
+  - Added support for **PostgreSQL** via `PgSqlConnection`.
+  - Added support for **SQLite** via `SqliteConnection`.
+  - Set **SQLite** as the default database connection for easier local development.
+  - Added `database_path($path)` helper for SQLite management.
+  - Added `db()->close()` for manual connection termination.
+- **Environment & Configuration**:
+  - Implemented automatic **.env file loading** in `Core\Rijan`.
+  - Enhanced `env()` helper with support for default values and type casting (boolean, null, empty).
+  - Updated all core configuration files to utilize `env()` with sensible fallback defaults.
+- **Testing Suite**:
+  - Integrated **PHPUnit 10** for comprehensive unit and feature testing.
+  - Implemented automated **SQLite-in-memory** testing environment.
+  - Added support for **Multi-row Inserts** in `QueryBuilder`.
+  - Fixed various core bugs in `Request`, `Response`, and `Database` revealed by the testing suite.
+  - Added `Makefile` for developer workflow and **GitHub Actions** for CI/CD.
+
+### Changed
+- **Lifecycle Refactor**:
+  - Updated `Core\Rijan::run` to manage the complete Request-Response loop.
+  - Standardized PDO fetch mode to `FETCH_ASSOC` across drivers for consistency.
+- **View modurality**:
+  - Removed centralized `config/view.php`.
+  - Views are now resolved dynamically from modules registered via `Core\Modules\Register`.
+- **Core Improvements**:
+  - Refactored `Core\Rijan` to load helpers dynamically during `base_path` initialization.
+  - Added `$db` and `$log` properties to `Rijan` core for easier access.
+
+### Changed
+- **Directory Structure & PSR-4 Compliance**:
+  - Renamed root directories to PascalCase: `core` -> `Core`, `master` -> `Master`, `modules` -> `Modules`.
+  - Updated namespace declarations across the framework to match PSR-4 standards (e.g., `Teguh02\Rijanphp\Core`).
+  - Updated `composer.json` autoload mappings.
+- **Module Registration**:
+  - Updated `Core\Modules\Register::init` to automatically load `routes/web.php` from modules.
+  - Updated `Core\Modules\Executor::Run` to bootstrap modules via config before dispatching routes.
+- **Autoloader**:
+  - Enhanced `Core\Autoload\Autoloader` to support new directory structure.
+  - Added automatic helper file loading in `Core\Rijan`.
+
+### Fixed
+- Fixed 404 error caused by modules not being bootstrapped before routing.
+- Fixed CLrf/array key warnings in CLI environment.
+
+## [1.0.0] - Initial Release
+- Basic MVC structure.
+- Initial Autoloader implementation.
