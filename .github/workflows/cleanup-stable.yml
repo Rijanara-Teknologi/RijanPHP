@@ -13,6 +13,12 @@ jobs:
           token: ${{ secrets.CLEANUP_TOKEN }}
           fetch-depth: 0
 
+      - name: Extract version
+        id: get_version
+        run: |
+          VERSION=$(grep "final public const VERSION" Core/Rijan.php | cut -d"'" -f2)
+          echo "VERSION=v$VERSION" >> $GITHUB_OUTPUT
+
       - name: Cleanup non-core files
         run: |
           rm -rf tests/
@@ -23,14 +29,27 @@ jobs:
           rm -f .env.test
           rm -rf .github/workflows/tests.yml
 
-      - name: Commit and push changes
+      - name: Commit and push cleanup
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add -A
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: cleanup non-core files for stable branch"
-            git push origin HEAD:stable
+            git push origin HEAD:stable --force
           else
             echo "No changes to commit"
           fi
+
+      - name: Create Tag and Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            Automated production release for RijanPHP.
+            - Clean core framework files only.
+            - Professional error handling and pages.
+            - Stable branch synchronization.
+          generate_release_notes: true
+          token: ${{ secrets.CLEANUP_TOKEN }}

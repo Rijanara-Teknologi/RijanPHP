@@ -20,7 +20,7 @@ class Rijan
     public $db;
     public $log;
 
-    final public const VERSION = '1.0.0';
+    final public const VERSION = '1.3.0';
 
     public static $instance;
 
