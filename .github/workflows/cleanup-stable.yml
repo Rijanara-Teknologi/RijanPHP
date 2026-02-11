@@ -3,8 +3,6 @@ name: Stable Branch Cleanup
 on:
   push:
     branches: [ stable ]
-  pull_request:
-    branches: [ stable ]
 
 jobs:
   cleanup:
@@ -32,7 +30,7 @@ jobs:
           git add -A
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: cleanup non-core files for stable branch"
-            git push origin stable
+            git push origin HEAD:stable
           else
             echo "No changes to commit"
           fi
