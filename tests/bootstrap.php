@@ -14,7 +14,18 @@ if (file_exists($basePath . '/vendor/autoload.php')) {
     require $basePath . '/Core/Autoload/Autoloader.php';
 }
 
-// Initialize framework
+// 1. Set environment variables (before loading framework config)
+$driver = getenv('DB_CONNECTION') ?: 'sqlite';
+$dbName = getenv('DB_DATABASE') ?: ':memory:';
+
+putenv("DB_CONNECTION=$driver");
+putenv("DB_DATABASE=$dbName");
+$_ENV['DB_CONNECTION'] = $driver;
+$_ENV['DB_DATABASE'] = $dbName;
+$_SERVER['DB_CONNECTION'] = $driver;
+$_SERVER['DB_DATABASE'] = $dbName;
+
+// 2. Initialize framework
 $rijan = new \Teguh02\Rijanphp\Core\Rijan();
 $rijan->base_path($basePath)
     ->config($basePath . '/config');
@@ -24,18 +35,13 @@ if (empty(getenv('APP_KEY'))) {
     putenv('APP_KEY=base64:' . base64_encode(random_bytes(32)));
 }
 
-// Setup test database
+// 3. Setup test database schema
 setupTestDatabase();
 
 function setupTestDatabase()
 {
-    // Detect driver from environment or fallback
-    $driver = getenv('DB_CONNECTION') ?: 'sqlite';
-    $dbName = getenv('DB_DATABASE') ?: ':memory:';
-
-    // Set environment for config() helper
-    putenv("DB_CONNECTION=$driver");
-    putenv("DB_DATABASE=$dbName");
+    // Retrieve already set environment
+    $driver = getenv('DB_CONNECTION');
 
     $db = db();
 

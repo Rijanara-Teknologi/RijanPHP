@@ -82,14 +82,14 @@ class ViewEngine
             }
         }
 
-        // Debugging for CI
-        if (getenv('CI') || getenv('GITHUB_ACTIONS')) {
-            echo "\nView [{$view}] not found. Searched in:\n";
-            echo "Namespaces: " . print_r($this->namespaces, true) . "\n";
-            echo "Paths: " . print_r($this->paths, true) . "\n";
+        // Check if debug mode or CI
+        $debugInfo = "";
+        if (getenv('CI') || getenv('GITHUB_ACTIONS') || getenv('APP_DEBUG')) {
+            $debugInfo .= "\nSearched Namespaces: " . print_r($this->namespaces, true);
+            $debugInfo .= "\nSearched Paths: " . print_r($this->paths, true);
         }
 
-        throw new \Exception("View [{$view}] not found.");
+        throw new \Exception("View [{$view}] not found." . $debugInfo);
     }
 
     /**
