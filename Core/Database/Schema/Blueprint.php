@@ -38,6 +38,12 @@ class Blueprint
         return $this;
     }
 
+    public function raw($definition)
+    {
+        $this->columns[] = $definition;
+        return $this;
+    }
+
     public function timestamps()
     {
         $this->columns[] = "created_at DATETIME DEFAULT CURRENT_TIMESTAMP";

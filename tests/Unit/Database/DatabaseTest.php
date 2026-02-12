@@ -5,6 +5,12 @@ use Teguh02\Rijanphp\Tests\TestCase;
 
 class DatabaseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        setupTestDatabase();
+    }
+
     public function testSelectAll(): void
     {
         $results = $this->db->table('users')->get();

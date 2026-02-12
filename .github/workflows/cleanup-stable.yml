@@ -24,6 +24,8 @@ jobs:
           rm -rf tests/
           rm -rf storage/
           rm -rf Master/Views/
+          rm -rf Master/Seeds/TestSeeder.php
+          rm -rf Modules/Product/
           rm -f composer.lock
           rm -f Makefile
           rm -f phpunit.xml

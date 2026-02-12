@@ -11,8 +11,8 @@ class SeederTest extends TestCase
     public function test_database_seeding()
     {
         // 1. Clean up & Prepare Database
+        db()->query('DROP TABLE IF EXISTS posts'); // Drop dependent table first
         db()->query('DROP TABLE IF EXISTS users');
-        db()->query('DROP TABLE IF EXISTS posts');
         db()->query('DROP TABLE IF EXISTS products');
         db()->query('DROP TABLE IF EXISTS orders');
         db()->query('DROP TABLE IF EXISTS migrations');
