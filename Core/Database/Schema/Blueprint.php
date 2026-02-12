@@ -16,6 +16,13 @@ class Blueprint
     public function id($column = 'id')
     {
         $driver = getenv('DB_CONNECTION') ?: 'sqlite';
+
+        if ($driver === 'pgsql') {
+            $this->columns[] = "{$column} SERIAL PRIMARY KEY";
+            $this->primaryKey = $column;
+            return $this;
+        }
+
         $autoIncrement = ($driver === 'mysql') ? 'AUTO_INCREMENT' : 'AUTOINCREMENT';
 
         // MySQL uses INT, SQLite uses INTEGER for auto-increment primary keys
