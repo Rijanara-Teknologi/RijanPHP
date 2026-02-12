@@ -182,12 +182,30 @@ class QueryBuilder
         return $stmt->rowCount();
     }
 
+    // ... (previous code)
+
+    public function join($table, $first, $operator, $second, $type = 'INNER')
+    {
+        $this->joins[] = "{$type} JOIN {$table} ON {$first} {$operator} {$second}";
+        return $this;
+    }
+
+    public function leftJoin($table, $first, $operator, $second)
+    {
+        return $this->join($table, $first, $operator, $second, 'LEFT');
+    }
+
+    public function rightJoin($table, $first, $operator, $second)
+    {
+        return $this->join($table, $first, $operator, $second, 'RIGHT');
+    }
+
     protected function compileSelect()
     {
         $sql = "SELECT {$this->select} FROM {$this->table}";
 
         if (!empty($this->joins)) {
-            // Implement joins compilation
+            $sql .= " " . implode(' ', $this->joins);
         }
 
         $sql .= $this->compileWhere();

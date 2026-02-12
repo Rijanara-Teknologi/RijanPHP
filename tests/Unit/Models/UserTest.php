@@ -123,4 +123,44 @@ class UserTest extends TestCase
         $this->assertIsObject($user);
         $this->assertEquals('First User', $user->name);
     }
+
+    public function test_can_join_tables()
+    {
+        $userModel = new User();
+
+        // Users are already seeded in setupTestDatabase (John Doe, Jane Smith, Bob Johnson)
+        // Posts are already seeded (User 1 has 2 posts, User 2 has 1 post)
+
+        // Test Join
+        // Select users name and post title
+        $results = $userModel->select(['users.name', 'posts.title'])
+            ->join('posts', 'users.id', '=', 'posts.user_id')
+            ->where('users.id', 1)
+            ->findAll();
+
+        $this->assertIsArray($results);
+        $this->assertCount(2, $results); // User 1 has 2 posts
+
+        // Check structure
+        // Since we selected specific columns, the result should have those properties
+        $firstPost = $results[0];
+        $this->assertEquals('John Doe', $firstPost->name);
+        $this->assertNotNull($firstPost->title);
+    }
+
+    public function test_can_run_raw_query()
+    {
+        $userModel = new User();
+
+        // Execute raw query
+        $stmt = $userModel->query("SELECT count(*) as count FROM users");
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        // We have 3 users from seed + 3 users from previous tests in this file (if not reset properly, but here Setup resets DB)
+        // TestCase setup calls setupTestDatabase which resets DB.
+        // UserTest setup calls setupTestDatabase.
+        // So we have 3 users from seed.
+
+        $this->assertEquals(3, $result['count']);
+    }
 }

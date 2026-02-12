@@ -59,6 +59,34 @@ abstract class Model
     public function where($column, $operator = null, $value = null)
     {
         $this->builder->where($column, $operator, $value);
+        $this->builder->where($column, $operator, $value);
+        return $this;
+    }
+
+    /**
+     * Join a table.
+     */
+    public function join($table, $first, $operator, $second, $type = 'INNER')
+    {
+        $this->builder->join($table, $first, $operator, $second, $type);
+        return $this;
+    }
+
+    /**
+     * Left Join a table.
+     */
+    public function leftJoin($table, $first, $operator, $second)
+    {
+        $this->builder->leftJoin($table, $first, $operator, $second);
+        return $this;
+    }
+
+    /**
+     * Right Join a table.
+     */
+    public function rightJoin($table, $first, $operator, $second)
+    {
+        $this->builder->rightJoin($table, $first, $operator, $second);
         return $this;
     }
 
@@ -255,5 +283,13 @@ abstract class Model
     {
         $this->builder->limit($limit, $offset);
         return $this;
+    }
+
+    /**
+     * Execute a raw query.
+     */
+    public function query($sql, $bindings = [])
+    {
+        return $this->builder->query($sql, $bindings);
     }
 }
