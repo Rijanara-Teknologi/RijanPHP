@@ -11,5 +11,5 @@ Router::put('/product/id/{id}', [ProductController::class, 'update']);
 Router::delete('/product/id/{id}', [ProductController::class, 'destroy']);
 
 Router::get('/test-master-layout', function () {
-    return view('test_layout');
+    return view('product::test_layout');
 });
