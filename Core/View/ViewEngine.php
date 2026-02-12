@@ -57,6 +57,17 @@ class ViewEngine
                     return $fullPath;
                 }
             }
+
+            // Fallback: Try lowercase namespace (for case-sensitive file systems)
+            $nsLower = strtolower($ns);
+            if (isset($this->namespaces[$nsLower])) {
+                $fullPath = $this->namespaces[$nsLower] . $name . '.php';
+                $fullPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $fullPath);
+
+                if (file_exists($fullPath)) {
+                    return $fullPath;
+                }
+            }
         }
 
         // Global search

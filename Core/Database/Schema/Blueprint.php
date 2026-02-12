@@ -15,7 +15,13 @@ class Blueprint
 
     public function id($column = 'id')
     {
-        $this->columns[] = "{$column} INTEGER PRIMARY KEY AUTOINCREMENT";
+        $driver = getenv('DB_CONNECTION') ?: 'sqlite';
+        $autoIncrement = ($driver === 'mysql') ? 'AUTO_INCREMENT' : 'AUTOINCREMENT';
+
+        // MySQL uses INT, SQLite uses INTEGER for auto-increment primary keys
+        $type = ($driver === 'mysql') ? 'INT' : 'INTEGER';
+
+        $this->columns[] = "{$column} {$type} PRIMARY KEY {$autoIncrement}";
         $this->primaryKey = $column;
         return $this;
     }
