@@ -88,4 +88,39 @@ class UserTest extends TestCase
 
         $this->assertCount(0, $usersEmpty);
     }
+
+    public function test_can_chain_update()
+    {
+        $userModel = new User();
+        $userModel->insert(['name' => 'To Update', 'email' => 'update@example.com', 'password' => 'secret']);
+
+        // Update using chaining
+        $userModel->where('email', 'update@example.com')->update(['name' => 'Updated Name']);
+
+        $updatedUser = $userModel->where('email', 'update@example.com')->first();
+        $this->assertEquals('Updated Name', $updatedUser->name);
+    }
+
+    public function test_can_chain_delete()
+    {
+        $userModel = new User();
+        $userModel->insert(['name' => 'To Delete', 'email' => 'delete@example.com', 'password' => 'secret']);
+
+        // Delete using chaining
+        $userModel->where('email', 'delete@example.com')->delete();
+
+        $deletedUser = $userModel->where('email', 'delete@example.com')->first();
+        $this->assertNull($deletedUser);
+    }
+
+    public function test_can_chain_first()
+    {
+        $userModel = new User();
+        $userModel->insert(['name' => 'First User', 'email' => 'first@example.com', 'password' => 'secret']);
+
+        $user = $userModel->where('email', 'first@example.com')->first();
+
+        $this->assertIsObject($user);
+        $this->assertEquals('First User', $user->name);
+    }
 }
