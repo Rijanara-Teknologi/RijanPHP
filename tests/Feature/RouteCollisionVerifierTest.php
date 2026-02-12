@@ -83,7 +83,7 @@ class RouteCollisionVerifierTest extends TestCase
     public function test_route_responses_contain_expected_content()
     {
         $testCases = [
-            '/' => 'RijanPHP v1.0.0 is now stable!',
+            '/' => 'RijanPHP v' . \Teguh02\Rijanphp\Core\Rijan::VERSION . ' is now stable!',
             '/products' => 'Our Products',
         ];
 
