@@ -87,6 +87,15 @@ class ViewEngine
         if (getenv('CI') || getenv('GITHUB_ACTIONS') || getenv('APP_DEBUG')) {
             $debugInfo .= "\nSearched Namespaces: " . print_r($this->namespaces, true);
             $debugInfo .= "\nSearched Paths: " . print_r($this->paths, true);
+
+            // Critical Debug: List files in the namespace directories
+            foreach ($this->namespaces as $ns => $path) {
+                if (is_dir($path)) {
+                    $debugInfo .= "\nFiles in [{$ns}] ({$path}): " . print_r(scandir($path), true);
+                } else {
+                    $debugInfo .= "\nPath for [{$ns}] ({$path}) does not exist or is not a directory.";
+                }
+            }
         }
 
         throw new \Exception("View [{$view}] not found." . $debugInfo);
