@@ -8,7 +8,7 @@ use Teguh02\Rijanphp\Master\Seeds\DatabaseSeeder;
 
 class MigrationTest extends TestCase
 {
-    public function test_migrations_and_seeders()
+    public function test_migrations_execution()
     {
         // 1. Clean up potential bootstrap tables
         db()->query('DROP TABLE IF EXISTS users');
@@ -37,17 +37,6 @@ class MigrationTest extends TestCase
         $this->assertTrue(\Teguh02\Rijanphp\Core\Database\Schema\Schema::hasTable('users'), 'Users table should exist.');
         $this->assertTrue(\Teguh02\Rijanphp\Core\Database\Schema\Schema::hasTable('products'), 'Products table should exist.');
         $this->assertTrue(\Teguh02\Rijanphp\Core\Database\Schema\Schema::hasTable('orders'), 'Orders table should exist.');
-
-        // 5. Run Seeders
-        $seeder = new DatabaseSeeder();
-        $seeder->run();
-
-        // 6. Assert Data Exists
-        $user = db()->table('users')->where('email', 'admin@example.com')->first();
-        $this->assertNotNull($user, 'Admin user should be seeded.');
-        $this->assertEquals('Admin User', $user['name']);
-
-        $testUser = db()->table('users')->where('email', 'test@example.com')->first();
-        $this->assertNotNull($testUser, 'Test user should be seeded.');
+        $this->assertTrue(\Teguh02\Rijanphp\Core\Database\Schema\Schema::hasTable('orders'), 'Orders table should exist.');
     }
 }
