@@ -59,6 +59,34 @@ abstract class Model
     public function where($column, $operator = null, $value = null)
     {
         $this->builder->where($column, $operator, $value);
+        $this->builder->where($column, $operator, $value);
+        return $this;
+    }
+
+    /**
+     * Join a table.
+     */
+    public function join($table, $first, $operator, $second, $type = 'INNER')
+    {
+        $this->builder->join($table, $first, $operator, $second, $type);
+        return $this;
+    }
+
+    /**
+     * Left Join a table.
+     */
+    public function leftJoin($table, $first, $operator, $second)
+    {
+        $this->builder->leftJoin($table, $first, $operator, $second);
+        return $this;
+    }
+
+    /**
+     * Right Join a table.
+     */
+    public function rightJoin($table, $first, $operator, $second)
+    {
+        $this->builder->rightJoin($table, $first, $operator, $second);
         return $this;
     }
 
@@ -93,6 +121,19 @@ abstract class Model
     }
 
     /**
+     * Find the first record.
+     */
+    public function first()
+    {
+        if ($this->useSoftDeletes) {
+            $this->builder->where($this->deletedField, null);
+        }
+
+        $result = $this->builder->limit(1)->get();
+        return $this->formatResult($result[0] ?? null);
+    }
+
+    /**
      * Insert a new record.
      */
     public function insert($data)
@@ -121,9 +162,16 @@ abstract class Model
 
     /**
      * Update an existing record.
+     * Supports chaining: $model->where(...)->update(null, $data);
      */
-    public function update($id, $data)
+    public function update($id = null, $data = null)
     {
+        // Handle chained update: update(array $data) where $id is actually data
+        if (is_array($id) && $data === null) {
+            $data = $id;
+            $id = null;
+        }
+
         if (!$this->skipValidation && !$this->validate($data)) {
             return false;
         }
@@ -137,7 +185,10 @@ abstract class Model
         // Trigger beforeUpdate callbacks
         $data = $this->triggerCallbacks('beforeUpdate', $data);
 
-        $this->builder->where($this->primaryKey, $id);
+        if ($id) {
+            $this->builder->where($this->primaryKey, $id);
+        }
+
         $result = $this->builder->update($data);
 
         // Trigger afterUpdate callbacks
@@ -148,10 +199,13 @@ abstract class Model
 
     /**
      * Delete a record.
+     * Supports chaining: $model->where(...)->delete();
      */
-    public function delete($id)
+    public function delete($id = null)
     {
-        $this->builder->where($this->primaryKey, $id);
+        if ($id) {
+            $this->builder->where($this->primaryKey, $id);
+        }
 
         // Trigger beforeDelete
         $this->triggerCallbacks('beforeDelete', ['id' => $id]);
@@ -229,5 +283,13 @@ abstract class Model
     {
         $this->builder->limit($limit, $offset);
         return $this;
+    }
+
+    /**
+     * Execute a raw query.
+     */
+    public function query($sql, $bindings = [])
+    {
+        return $this->builder->query($sql, $bindings);
     }
 }

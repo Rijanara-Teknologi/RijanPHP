@@ -57,6 +57,17 @@ class ViewEngine
                     return $fullPath;
                 }
             }
+
+            // Fallback: Try lowercase namespace (for case-sensitive file systems)
+            $nsLower = strtolower($ns);
+            if (isset($this->namespaces[$nsLower])) {
+                $fullPath = $this->namespaces[$nsLower] . $name . '.php';
+                $fullPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $fullPath);
+
+                if (file_exists($fullPath)) {
+                    return $fullPath;
+                }
+            }
         }
 
         // Global search
@@ -83,5 +94,25 @@ class ViewEngine
         ob_start();
         include $__path;
         return ob_get_clean();
+    }
+
+    public function extends($layout)
+    {
+        View:: extends($layout);
+    }
+
+    public function section($name)
+    {
+        View::section($name);
+    }
+
+    public function endSection()
+    {
+        View::endSection();
+    }
+
+    public function yield($name, $default = '')
+    {
+        return View::yield($name, $default);
     }
 }

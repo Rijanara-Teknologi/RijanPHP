@@ -22,11 +22,17 @@ jobs:
       - name: Cleanup non-core files
         run: |
           rm -rf tests/
+          rm -rf tests_manual/
           rm -rf storage/
+          rm -rf Master/Views/
+          rm -rf Master/Seeds/TestSeeder.php
+          rm -rf Modules/Product/
           rm -f composer.lock
           rm -f Makefile
           rm -f phpunit.xml
           rm -f .env.test
+          rm -f Master/Migrations/0002_create_products_table.php
+          rm -f Master/Migrations/0003_create_orders_table.php
           rm -rf .github/workflows/tests.yml
 
       - name: Commit and push cleanup
