@@ -59,8 +59,11 @@ class Blueprint
 
     public function timestamps()
     {
-        $this->columns[] = "created_at DATETIME DEFAULT CURRENT_TIMESTAMP";
-        $this->columns[] = "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP";
+        $driver = getenv('DB_CONNECTION') ?: 'sqlite';
+        $type = ($driver === 'pgsql') ? 'TIMESTAMP' : 'DATETIME';
+
+        $this->columns[] = "created_at {$type} DEFAULT CURRENT_TIMESTAMP";
+        $this->columns[] = "updated_at {$type} DEFAULT CURRENT_TIMESTAMP";
         return $this;
     }
 
