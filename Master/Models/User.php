@@ -13,7 +13,8 @@ class User extends Model
     protected $allowedFields = [
         'name',
         'email',
-        'password'
+        'password',
+        'age',
     ];
 
     protected $useTimestamps = true;

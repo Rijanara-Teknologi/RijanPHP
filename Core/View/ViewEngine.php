@@ -95,4 +95,24 @@ class ViewEngine
         include $__path;
         return ob_get_clean();
     }
+
+    public function extends($layout)
+    {
+        View:: extends($layout);
+    }
+
+    public function section($name)
+    {
+        View::section($name);
+    }
+
+    public function endSection()
+    {
+        View::endSection();
+    }
+
+    public function yield($name, $default = '')
+    {
+        return View::yield($name, $default);
+    }
 }

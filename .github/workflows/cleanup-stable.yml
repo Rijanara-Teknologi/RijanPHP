@@ -22,6 +22,7 @@ jobs:
       - name: Cleanup non-core files
         run: |
           rm -rf tests/
+          rm -rf tests_manual/
           rm -rf storage/
           rm -rf Master/Views/
           rm -rf Master/Seeds/TestSeeder.php
