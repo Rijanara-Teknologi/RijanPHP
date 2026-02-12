@@ -2,6 +2,8 @@
 
 namespace Teguh02\Rijanphp\Tests;
 
+use PHPUnit\Framework\Assert;
+
 class TestResponse
 {
     protected $content;
@@ -23,12 +25,13 @@ class TestResponse
         return $this->statusCode;
     }
 
+    public function assertStatus($status)
+    {
+        Assert::assertEquals($status, $this->statusCode, "Expected status code {$status} but received {$this->statusCode}.\nResponse Body: " . $this->content);
+    }
+
     public function assertSee($text)
     {
-        if (strpos($this->content, $text) === false) {
-            throw new \PHPUnit\Framework\ExpectationFailedException(
-                "Failed asserting that response contains \"$text\"."
-            );
-        }
+        Assert::assertStringContainsString($text, $this->content, "Failed asserting that response contains \"$text\".");
     }
 }

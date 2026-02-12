@@ -70,6 +70,7 @@ function setupTestDatabase()
         $idCol,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
         age INTEGER,
         created_at $dateTimeType DEFAULT CURRENT_TIMESTAMP,
         updated_at $dateTimeType DEFAULT CURRENT_TIMESTAMP,
@@ -88,9 +89,9 @@ function setupTestDatabase()
 
     // Insert seed data
     $db->table('users')->insert([
-        ['name' => 'John Doe', 'email' => 'john@example.com', 'age' => 30],
-        ['name' => 'Jane Smith', 'email' => 'jane@example.com', 'age' => 25],
-        ['name' => 'Bob Johnson', 'email' => 'bob@example.com', 'age' => 35],
+        ['name' => 'John Doe', 'email' => 'john@example.com', 'password' => 'secret', 'age' => 30],
+        ['name' => 'Jane Smith', 'email' => 'jane@example.com', 'password' => 'secret', 'age' => 25],
+        ['name' => 'Bob Johnson', 'email' => 'bob@example.com', 'password' => 'secret', 'age' => 35],
     ]);
 
     $db->table('posts')->insert([

@@ -1,7 +1,9 @@
 <?php
 use Teguh02\Rijanphp\Core\Router\Router;
 use Teguh02\Rijanphp\Modules\Product\Controllers\ProductController;
+use Teguh02\Rijanphp\Modules\Product\Controllers\UserController;
 
+Router::get('/product/users', [UserController::class, 'index']);
 Router::get('/products', [ProductController::class, 'index']);
 Router::get('/product/id/{id}', [ProductController::class, 'show']);
 Router::get('/product/slug/{slug}', [ProductController::class, 'showBySlug']);
