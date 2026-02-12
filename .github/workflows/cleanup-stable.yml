@@ -23,6 +23,7 @@ jobs:
         run: |
           rm -rf tests/
           rm -rf storage/
+          rm -rf Master/Views/
           rm -f composer.lock
           rm -f Makefile
           rm -f phpunit.xml
