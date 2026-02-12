@@ -48,4 +48,45 @@ abstract class TestCase extends BaseTestCase
 
         return $this->db->table('users')->where('email', $userData['email'])->first();
     }
+
+    public function call($method, $uri, $parameters = [])
+    {
+        // Reset state
+        \Teguh02\Rijanphp\Core\Router\Router::clear();
+        \Teguh02\Rijanphp\Core\View\View::clear();
+
+        $_SERVER['REQUEST_METHOD'] = strtoupper($method);
+        $_SERVER['REQUEST_URI'] = $uri;
+
+        if ($method === 'POST') {
+            $_POST = $parameters;
+        }
+
+        // Initialize App
+        $app = new \Teguh02\Rijanphp\Core\Rijan();
+        $app->base_path(dirname(__DIR__));
+        $app->config(dirname(__DIR__) . '/config');
+
+        // Capture Output
+        ob_start();
+        $app->run();
+        $content = ob_get_clean();
+
+        $code = http_response_code();
+        if ($code === false) {
+            $code = 200;
+        }
+
+        return new TestResponse($content, $code);
+    }
+
+    public function get($uri)
+    {
+        return $this->call('GET', $uri);
+    }
+
+    public function post($uri, $data = [])
+    {
+        return $this->call('POST', $uri, $data);
+    }
 }

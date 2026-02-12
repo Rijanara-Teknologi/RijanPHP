@@ -167,6 +167,7 @@ class Rijan
 
         // Register core view namespace
         \Teguh02\Rijanphp\Core\View\View::addNamespace('core', $this->base_path('Core/Views'));
+        \Teguh02\Rijanphp\Core\View\View::addNamespace('master', $this->base_path('Master/Views'));
 
         // Bootstrap Error/Exception Handler
         \Teguh02\Rijanphp\Core\Exception\Handler::register();
