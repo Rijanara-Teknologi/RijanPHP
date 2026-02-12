@@ -107,6 +107,13 @@ class QueryBuilder
         return $result ?: null;
     }
 
+    public function exists()
+    {
+        $this->limit(1);
+        $result = $this->get();
+        return !empty($result);
+    }
+
     public function insert(array $data)
     {
         if (empty($data)) {
@@ -137,7 +144,7 @@ class QueryBuilder
         $placeholders = implode(', ', array_fill(0, count($data), '?'));
 
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders})";
-
+        // var_dump($sql); 
         $this->connection->query($sql, array_values($data));
 
         return $this->connection->lastInsertId();
@@ -247,5 +254,19 @@ class QueryBuilder
     public function fetchAll($sql, $bindings = [])
     {
         return $this->connection->fetchAll($sql, $bindings);
+    }
+
+    public function pluck($column)
+    {
+        $this->select([$column]);
+        $results = $this->get();
+        return array_column($results, $column);
+    }
+
+    public function max($column)
+    {
+        $this->select(["MAX({$column}) as aggregate"]);
+        $result = $this->first();
+        return $result['aggregate'] ?? null;
     }
 }
