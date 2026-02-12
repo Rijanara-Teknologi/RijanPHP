@@ -16,6 +16,7 @@ class DatabaseQueryTest extends TestCase
         $this->db->table('users')->insert([
             'name' => 'Feature Test User',
             'email' => 'feature@example.com',
+            'password' => 'secret',
             'age' => 30,
         ]);
 

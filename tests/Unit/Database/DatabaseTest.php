@@ -40,6 +40,7 @@ class DatabaseTest extends TestCase
         $data = [
             'name' => 'New User',
             'email' => 'new@example.com',
+            'password' => 'secret',
             'age' => 40,
         ];
 
