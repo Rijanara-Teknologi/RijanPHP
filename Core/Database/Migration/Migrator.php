@@ -93,4 +93,92 @@ class Migrator
         $name = preg_replace('/^\d+_/', '', $migrationName);
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
     }
+
+    public function rollback()
+    {
+        $this->ensureTableExists();
+
+        $lastBatch = (int) db()->table('migrations')->max('batch');
+
+        if ($lastBatch <= 0) {
+            return [];
+        }
+
+        $migrations = db()->table('migrations')->where('batch', $lastBatch)->get();
+        $rolledBack = [];
+
+        foreach ($migrations as $migration) {
+            $migrationName = $migration['migration'];
+            $files = $this->getAllMigrationFiles();
+
+            $filePath = null;
+            foreach ($files as $file) {
+                if (basename($file, '.php') === $migrationName) {
+                    $filePath = $file;
+                    break;
+                }
+            }
+
+            if ($filePath) {
+                require_once $filePath;
+                $className = $this->resolveClassName($migrationName);
+                if (class_exists($className)) {
+                    $migrationObj = new $className;
+                    $migrationObj->down();
+                    $rolledBack[] = $migrationName;
+                }
+            }
+
+            db()->table('migrations')->where('migration', $migrationName)->delete();
+        }
+
+        return $rolledBack;
+    }
+
+    public function status()
+    {
+        $this->ensureTableExists();
+
+        $ran = $this->getRan();
+        $allFiles = $this->getAllMigrationFiles();
+        $status = [];
+
+        foreach ($allFiles as $file) {
+            $migrationName = basename($file, '.php');
+            $isMigrated = in_array($migrationName, $ran);
+
+            $batch = null;
+            if ($isMigrated) {
+                $row = db()->table('migrations')->where('migration', $migrationName)->first();
+                $batch = $row['batch'] ?? null;
+            }
+
+            $status[] = [
+                'name' => $migrationName,
+                'migrated' => $isMigrated,
+                'batch' => $batch,
+            ];
+        }
+
+        return $status;
+    }
+
+    protected function getAllMigrationFiles()
+    {
+        $basePath = dirname(dirname(dirname(__DIR__))) . '/';
+        $paths = [$basePath . 'Master/Migrations'];
+
+        $modulesDir = $basePath . 'Modules';
+        if (is_dir($modulesDir)) {
+            foreach (scandir($modulesDir) as $module) {
+                if ($module === '.' || $module === '..') continue;
+                $modulePath = $modulesDir . '/' . $module . '/Migrations';
+                if (is_dir($modulePath)) {
+                    $paths[] = $modulePath;
+                }
+            }
+        }
+
+        return $this->getMigrationFiles($paths);
+    }
 }

@@ -20,7 +20,7 @@ class Rijan
     public $db;
     public $log;
 
-    final public const VERSION = '1.3.0';
+    protected static $version = null;
 
     public static $instance;
 
@@ -154,7 +154,24 @@ class Rijan
 
     final public static function version(): string
     {
-        return self::VERSION;
+        if (self::$version === null) {
+            self::$version = self::readVersionFromComposer();
+        }
+        return self::$version;
+    }
+
+    protected static function readVersionFromComposer(): string
+    {
+        $composerPath = self::$instance && self::$instance->base_path
+            ? self::$instance->base_path('composer.json')
+            : __DIR__ . '/../composer.json';
+
+        if (!file_exists($composerPath)) {
+            return '0.0.0';
+        }
+
+        $composer = json_decode(file_get_contents($composerPath), true);
+        return $composer['version'] ?? '0.0.0';
     }
 
     /**

@@ -2,7 +2,60 @@
 
 All notable changes to the **RijanPHP** framework will be documented in this file.
 
-## [1.3.0] - 2026-02-11
+## [Unreleased]
+
+### Added
+- **CLI Tool (`rijan`)**:
+  - Added `rijan` binary entry point — zero-dependency CLI tool for framework management.
+  - Implemented `Core\Console\Application` with command routing, colored output, table rendering, and interactive prompts.
+  - **Make Commands**:
+    - `make:module` — Generate a complete module (controllers, models, views, routes, auto-registration).
+    - `make:controller` — Generate controllers (supports `--module=` option).
+    - `make:model` — Generate models with table configuration (supports `--module=` and `--table=` options).
+    - `make:middleware` — Generate middleware classes (supports `--module=` option).
+    - `make:migration` — Generate timestamped migration files (auto-detects create vs modify).
+    - `make:seeder` — Generate database seeder classes.
+    - `make:view` — Generate view files with layout scaffolding (supports `--module=` option).
+  - **Database Commands**:
+    - `migrate` — Run all pending migrations across Master and all Modules.
+    - `migrate:rollback` — Rollback the last batch of migrations.
+    - `migrate:status` — Display migration status table (migrated/pending).
+    - `db:seed` — Run database seeders (supports `--class=` option).
+  - **Utility Commands**:
+    - `serve` — Start PHP built-in development server (supports `--port=` option).
+    - `key:generate` — Generate and set `APP_KEY` in `.env` file.
+    - `route:list` — Display all registered routes in a formatted table.
+    - `about` — Display framework info (version, PHP, environment, database, paths).
+    - `cache:clear` — Clear cache and log files.
+    - `help` — Display command reference with examples.
+
+- **Dynamic Versioning**:
+  - Removed hardcoded `VERSION` constant from `Core\Rijan`.
+  - Framework version now reads from `composer.json` `version` field.
+  - Added `composer.json` `"version": "1.3.0"` as single source of truth.
+  - `Rijan::version()` method caches the result for performance.
+
+- **Migration System Enhancements**:
+  - Added `Migrator::rollback()` — rollback last batch with proper class resolution.
+  - Added `Migrator::status()` — return migration status for CLI display.
+  - Added `Migrator::getAllMigrationFiles()` — auto-discover migrations from all modules.
+
+- **New Modules**:
+  - `Modules/Product` — Full CRUD module with `ProductModel`, `ProductController`, routes, and views.
+
+### Changed
+- Updated `.github/workflows/cleanup-stable.yml` to:
+  - Auto-increment `composer.json` version on every merge to `stable`.
+  - Read version from `composer.json` instead of `Rijan.php`.
+  - Expanded cleanup to remove all test files, test modules, and reset `config/modules.php`.
+  - Added `Modules/Blog/` and dynamically-timestamped migrations to cleanup list.
+  - Reset `config/modules.php` to default (only `Homepage` module) on release.
+
+- Updated `Modules/Homepage/Views/index.php` to use `Rijan::version()` instead of `Rijan::VERSION`.
+
+### Fixed
+- Fixed `Encrypter` AES-128-CBC support — now correctly accepts 16-byte keys when cipher is explicitly specified.
+- Fixed `Migrator` class name resolution to properly handle numeric-prefixed migration filenames.
 
 ### Added
 - **HTTP & Controller Layer**:

@@ -13,35 +13,96 @@ jobs:
           token: ${{ secrets.CLEANUP_TOKEN }}
           fetch-depth: 0
 
-      - name: Extract version
-        id: get_version
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: json
+          tools: none
+
+      - name: Increment version in composer.json
+        id: bump_version
         run: |
-          VERSION=$(grep "final public const VERSION" Core/Rijan.php | cut -d"'" -f2)
-          echo "VERSION=v$VERSION" >> $GITHUB_OUTPUT
+          CURRENT_VERSION=$(php -r "echo json_decode(file_get_contents('composer.json'), true)['version'] ?? '0.0.0';")
+          echo "Current version: $CURRENT_VERSION"
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+          php -r "
+          \$json = json_decode(file_get_contents('composer.json'), true);
+          \$json['version'] = '${NEW_VERSION}';
+          file_put_contents('composer.json', json_encode(\$json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+          "
+
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_TAG=v${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "Version bumped: $CURRENT_VERSION → $NEW_VERSION"
 
       - name: Cleanup non-core files
         run: |
+          # Testing directories
           rm -rf tests/
           rm -rf tests_manual/
+          rm -rf .phpunit.cache/
+
+          # Storage (runtime files)
           rm -rf storage/
-          rm -rf Master/Views/
-          rm -rf Master/Seeds/TestSeeder.php
-          rm -rf Modules/Product/
-          rm -f composer.lock
-          rm -f Makefile
+
+          # PHPUnit & testing config
           rm -f phpunit.xml
           rm -f .env.test
-          rm -f Master/Migrations/0002_create_products_table.php
-          rm -f Master/Migrations/0003_create_orders_table.php
+          rm -f composer.lock
+
+          # Build tools
+          rm -f Makefile
+
+          # Test CI workflow
           rm -rf .github/workflows/tests.yml
 
-      - name: Commit and push cleanup
+          # Master views (example layouts/partials)
+          rm -rf Master/Views/
+
+          # Test seeders (keep DatabaseSeeder.php and UserSeeder.php)
+          rm -f Master/Seeds/TestSeeder.php
+          rm -f Master/Seeds/TagSeeder.php
+
+          # Test/example migrations (keep only 0001_create_users_table.php)
+          rm -f Master/Migrations/0002_create_products_table.php
+          rm -f Master/Migrations/0003_create_orders_table.php
+          rm -f Master/Migrations/[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]_*.php
+
+          # All modules EXCEPT Homepage (the default welcome module)
+          find Modules/ -mindepth 1 -maxdepth 1 -type d ! -name 'Homepage' -exec rm -rf {} +
+
+          # Test controllers created via CLI
+          rm -rf Master/Controllers/
+
+          # Test middleware created via CLI
+          rm -f Master/Middleware/CheckAge.php
+
+      - name: Reset config/modules.php to default
+        run: |
+          cat > config/modules.php << 'PHPEOF'
+          <?php defined('RIJANPHP') or die('Access denied.');
+
+          use Teguh02\Rijanphp\Modules\Homepage\HomePage;
+
+          return [
+              'modules' => \Teguh02\Rijanphp\Core\Modules\Module::load(
+                  new HomePage(),
+              ),
+          ];
+          PHPEOF
+
+      - name: Commit version bump and cleanup
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add -A
           if ! git diff-index --quiet HEAD; then
-            git commit -m "chore: cleanup non-core files for stable branch"
+            git commit -m "chore: bump version to ${{ steps.bump_version.outputs.NEW_VERSION }} and cleanup for stable"
             git push origin HEAD:stable --force
           else
             echo "No changes to commit"
@@ -50,10 +111,11 @@ jobs:
       - name: Create Tag and Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ steps.bump_version.outputs.VERSION_TAG }}
+          name: Release ${{ steps.bump_version.outputs.VERSION_TAG }}
           body: |
             Automated production release for RijanPHP.
+            - Version bumped to ${{ steps.bump_version.outputs.NEW_VERSION }}
             - Clean core framework files only.
             - Professional error handling and pages.
             - Stable branch synchronization.
