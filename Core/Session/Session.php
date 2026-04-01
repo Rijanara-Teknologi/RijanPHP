@@ -13,6 +13,14 @@ class Session
             return;
         }
 
+        if (PHP_SAPI === 'cli') {
+            if (!isset($_SESSION)) {
+                $_SESSION = [];
+            }
+            self::$started = true;
+            return;
+        }
+
         if (session_status() === PHP_SESSION_NONE) {
             $options = [
                 'cookie_lifetime' => 0,
@@ -106,6 +114,10 @@ class Session
     public static function regenerate($deleteOldSession = true)
     {
         self::ensureStarted();
+
+        if (PHP_SAPI === 'cli') {
+            return true;
+        }
 
         if (self::$regenerated) {
             return true;
