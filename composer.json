@@ -1,6 +1,6 @@
 {
     "name": "teguh02/rijanphp",
-    "version": "1.3.36",
+    "version": "1.3.37",
     "description": "A modern, modular, and zero-dependency PHP framework designed for simplicity.",
     "license": "MIT",
     "autoload": {
