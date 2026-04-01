@@ -3,12 +3,25 @@ name: Stable Branch Cleanup
 on:
   push:
     branches: [ stable ]
+    paths:
+      - 'Core/**'
+      - 'Master/**'
+      - 'Modules/**'
+      - 'public/**'
+      - 'config/**'
+      - 'composer.json'
+      - 'rijan'
+      - '!**/.github/**'
+
+concurrency:
+  group: stable-cleanup
+  cancel-in-progress: true
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.CLEANUP_TOKEN }}
           fetch-depth: 0
@@ -96,20 +109,20 @@ jobs:
           ];
           PHPEOF
 
-      - name: Commit version bump and cleanup
+      - name: Commit and push cleanup
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add -A
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: bump version to ${{ steps.bump_version.outputs.NEW_VERSION }} and cleanup for stable"
-            git push origin HEAD:stable --force
+            git push origin stable
           else
-            echo "No changes to commit"
+            echo "No changes to commit - skipping push"
           fi
 
       - name: Create Tag and Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.bump_version.outputs.VERSION_TAG }}
           name: Release ${{ steps.bump_version.outputs.VERSION_TAG }}
