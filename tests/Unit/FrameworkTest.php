@@ -107,7 +107,7 @@ class FrameworkTest extends TestCase
     public function testHashNeedsRehash()
     {
         $hash = Hash::make('password');
-        $this->assertFalse(Hash::needsRehash($hash, PASSWORD_BCRYPT, ['cost' => 10]));
+        $this->assertFalse(Hash::needsRehash($hash, ['cost' => 10]));
     }
 
     public function testEncryptAndDecrypt()
@@ -221,25 +221,38 @@ class FrameworkTest extends TestCase
         $this->assertEquals('Hello', Session::getFlash('message'));
     }
 
-    public function testCookieSetAndGet()
+    public function testCookieQueue()
     {
-        Cookie::set('test_cookie', 'test_value', time() + 3600);
+        Cookie::clearQueuedCookies();
+        Cookie::queue('queued_cookie', 'queued_value', 60);
 
-        $this->assertEquals('test_value', Cookie::get('test_cookie'));
-    }
-
-    public function testCookieHas()
-    {
-        Cookie::set('exists_cookie', 'value', time() + 3600);
-
-        $this->assertTrue(Cookie::has('exists_cookie'));
+        $queued = Cookie::getQueuedCookies();
+        $this->assertArrayHasKey('queued_cookie', $queued);
+        $this->assertEquals('queued_value', $queued['queued_cookie']['value']);
     }
 
     public function testCookieDelete()
     {
-        Cookie::set('delete_me', 'value', time() + 3600);
+        $_COOKIE['delete_me'] = 'value';
         Cookie::delete('delete_me');
 
         $this->assertFalse(Cookie::has('delete_me'));
+    }
+
+    public function testCookieForever()
+    {
+        Cookie::clearQueuedCookies();
+        Cookie::forever('forever_cookie', 'forever_value');
+
+        $queued = Cookie::getQueuedCookies();
+        $this->assertArrayHasKey('forever_cookie', $queued);
+    }
+
+    public function testCookieForget()
+    {
+        $_COOKIE['forget_me'] = 'value';
+        Cookie::forget('forget_me');
+
+        $this->assertFalse(Cookie::has('forget_me'));
     }
 }

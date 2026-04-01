@@ -4,6 +4,7 @@ namespace Teguh02\Rijanphp\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Teguh02\Rijanphp\Core\Database\QueryBuilder;
+use Teguh02\Rijanphp\Core\Database\Connection;
 
 class QueryBuilderTest extends TestCase
 {
@@ -14,34 +15,27 @@ class QueryBuilderTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockConnection = new class {
+        $this->mockConnection = new class implements Connection {
             public $lastQuery = '';
             public $lastBindings = [];
-            public $mockResults = [];
+            public $lastInsertId = 42;
 
-            public function query($sql, $bindings = [])
-            {
+            public function connect(array $config) { return $this; }
+            public function query($sql, $bindings = []) {
                 $this->lastQuery = $sql;
                 $this->lastBindings = $bindings;
                 return new class {
                     public function rowCount() { return 1; }
+                    public function fetchAll($mode = null) { return [['id' => 1, 'name' => 'Test']]; }
+                    public function fetch($mode = null) { return ['id' => 1, 'name' => 'Test']; }
                 };
             }
-
-            public function fetchAll($sql, $bindings = [])
-            {
-                return [['id' => 1, 'name' => 'Test']];
-            }
-
-            public function fetch($sql, $bindings = [])
-            {
-                return ['id' => 1, 'name' => 'Test'];
-            }
-
-            public function lastInsertId()
-            {
-                return 42;
-            }
+            public function fetch($sql, $bindings = []) { return ['id' => 1, 'name' => 'Test']; }
+            public function fetchAll($sql, $bindings = []) { return [['id' => 1, 'name' => 'Test']]; }
+            public function lastInsertId() { return $this->lastInsertId; }
+            public function beginTransaction() { return true; }
+            public function commit() { return true; }
+            public function rollBack() { return true; }
         };
 
         $this->builder = new QueryBuilder($this->mockConnection);
@@ -51,21 +45,18 @@ class QueryBuilderTest extends TestCase
     public function testSelectAll()
     {
         $this->builder->get();
-
         $this->assertStringContainsString('SELECT * FROM users', $this->mockConnection->lastQuery);
     }
 
     public function testSelectSpecificColumns()
     {
         $this->builder->select(['id', 'name'])->get();
-
         $this->assertStringContainsString('SELECT id, name FROM users', $this->mockConnection->lastQuery);
     }
 
     public function testWhereClause()
     {
         $this->builder->where('status', 'active')->get();
-
         $this->assertStringContainsString("WHERE status = ?", $this->mockConnection->lastQuery);
         $this->assertContains('active', $this->mockConnection->lastBindings);
     }
@@ -73,7 +64,6 @@ class QueryBuilderTest extends TestCase
     public function testMultipleWhereClauses()
     {
         $this->builder->where('status', 'active')->where('age', '>', 18)->get();
-
         $this->assertStringContainsString('AND', $this->mockConnection->lastQuery);
         $this->assertCount(2, $this->mockConnection->lastBindings);
     }
@@ -81,21 +71,18 @@ class QueryBuilderTest extends TestCase
     public function testOrderBy()
     {
         $this->builder->orderBy('created_at', 'DESC')->get();
-
         $this->assertStringContainsString('ORDER BY created_at DESC', $this->mockConnection->lastQuery);
     }
 
     public function testLimit()
     {
         $this->builder->limit(10)->get();
-
         $this->assertStringContainsString('LIMIT 10', $this->mockConnection->lastQuery);
     }
 
     public function testLimitWithOffset()
     {
         $this->builder->limit(10, 20)->get();
-
         $this->assertStringContainsString('LIMIT 10', $this->mockConnection->lastQuery);
         $this->assertStringContainsString('OFFSET 20', $this->mockConnection->lastQuery);
     }
@@ -103,7 +90,6 @@ class QueryBuilderTest extends TestCase
     public function testInsertSingleRow()
     {
         $id = $this->builder->insert(['name' => 'John', 'email' => 'john@example.com']);
-
         $this->assertEquals(42, $id);
         $this->assertStringContainsString('INSERT INTO users', $this->mockConnection->lastQuery);
     }
@@ -114,9 +100,7 @@ class QueryBuilderTest extends TestCase
             ['name' => 'John', 'email' => 'john@example.com'],
             ['name' => 'Jane', 'email' => 'jane@example.com'],
         ];
-
         $result = $this->builder->insert($data);
-
         $this->assertTrue($result);
         $this->assertStringContainsString('(?, ?), (?, ?)', $this->mockConnection->lastQuery);
     }
@@ -125,7 +109,6 @@ class QueryBuilderTest extends TestCase
     {
         $this->builder->where('id', 1);
         $result = $this->builder->update(['name' => 'Updated']);
-
         $this->assertStringContainsString('UPDATE users SET', $this->mockConnection->lastQuery);
         $this->assertStringContainsString('name = ?', $this->mockConnection->lastQuery);
     }
@@ -134,49 +117,42 @@ class QueryBuilderTest extends TestCase
     {
         $this->builder->where('id', 1);
         $result = $this->builder->delete();
-
         $this->assertStringContainsString('DELETE FROM users', $this->mockConnection->lastQuery);
     }
 
     public function testJoin()
     {
         $this->builder->join('posts', 'users.id', '=', 'posts.user_id')->get();
-
         $this->assertStringContainsString('INNER JOIN posts ON users.id = posts.user_id', $this->mockConnection->lastQuery);
     }
 
     public function testLeftJoin()
     {
         $this->builder->leftJoin('posts', 'users.id', '=', 'posts.user_id')->get();
-
         $this->assertStringContainsString('LEFT JOIN posts ON users.id = posts.user_id', $this->mockConnection->lastQuery);
     }
 
     public function testRightJoin()
     {
         $this->builder->rightJoin('posts', 'users.id', '=', 'posts.user_id')->get();
-
         $this->assertStringContainsString('RIGHT JOIN posts ON users.id = posts.user_id', $this->mockConnection->lastQuery);
     }
 
     public function testPluck()
     {
         $results = $this->builder->pluck('name');
-
         $this->assertIsArray($results);
     }
 
     public function testMax()
     {
         $max = $this->builder->max('age');
-
         $this->assertStringContainsString('MAX(age)', $this->mockConnection->lastQuery);
     }
 
     public function testFirst()
     {
         $result = $this->builder->first();
-
         $this->assertIsArray($result);
         $this->assertStringContainsString('LIMIT 1', $this->mockConnection->lastQuery);
     }
@@ -184,7 +160,6 @@ class QueryBuilderTest extends TestCase
     public function testExists()
     {
         $exists = $this->builder->exists();
-
         $this->assertTrue($exists);
     }
 

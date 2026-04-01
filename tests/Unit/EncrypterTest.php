@@ -121,14 +121,14 @@ class EncrypterTest extends TestCase
 
     public function testKeyLengthValidation()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\RuntimeException::class);
         new Encrypter('short-key');
     }
 
     public function testAes128KeyLength()
     {
         $key16 = random_bytes(16);
-        $encrypter = new Encrypter($key16);
+        $encrypter = new Encrypter($key16, 'AES-128-CBC');
 
         $encrypted = $encrypter->encrypt('test');
         $decrypted = $encrypter->decrypt($encrypted);
