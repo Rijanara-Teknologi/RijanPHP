@@ -18,9 +18,11 @@ class QueryBuilderTest extends TestCase
         $this->mockConnection = new class implements Connection {
             public $lastQuery = '';
             public $lastBindings = [];
-            public $lastInsertId = 42;
+            public $lastFetchAllSql = '';
+            public $lastFetchSql = '';
 
             public function connect(array $config) { return $this; }
+
             public function query($sql, $bindings = []) {
                 $this->lastQuery = $sql;
                 $this->lastBindings = $bindings;
@@ -30,9 +32,22 @@ class QueryBuilderTest extends TestCase
                     public function fetch($mode = null) { return ['id' => 1, 'name' => 'Test']; }
                 };
             }
-            public function fetch($sql, $bindings = []) { return ['id' => 1, 'name' => 'Test']; }
-            public function fetchAll($sql, $bindings = []) { return [['id' => 1, 'name' => 'Test']]; }
-            public function lastInsertId() { return $this->lastInsertId; }
+
+            public function fetch($sql, $bindings = []) {
+                $this->lastFetchSql = $sql;
+                $this->lastQuery = $sql;
+                $this->lastBindings = $bindings;
+                return ['id' => 1, 'name' => 'Test'];
+            }
+
+            public function fetchAll($sql, $bindings = []) {
+                $this->lastFetchAllSql = $sql;
+                $this->lastQuery = $sql;
+                $this->lastBindings = $bindings;
+                return [['id' => 1, 'name' => 'Test']];
+            }
+
+            public function lastInsertId() { return 42; }
             public function beginTransaction() { return true; }
             public function commit() { return true; }
             public function rollBack() { return true; }
@@ -42,49 +57,54 @@ class QueryBuilderTest extends TestCase
         $this->builder->table('users');
     }
 
+    protected function getLastSql()
+    {
+        return $this->mockConnection->lastFetchAllSql ?: $this->mockConnection->lastFetchSql ?: $this->mockConnection->lastQuery;
+    }
+
     public function testSelectAll()
     {
         $this->builder->get();
-        $this->assertStringContainsString('SELECT * FROM users', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('SELECT * FROM users', $this->getLastSql());
     }
 
     public function testSelectSpecificColumns()
     {
         $this->builder->select(['id', 'name'])->get();
-        $this->assertStringContainsString('SELECT id, name FROM users', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('SELECT id, name FROM users', $this->getLastSql());
     }
 
     public function testWhereClause()
     {
         $this->builder->where('status', 'active')->get();
-        $this->assertStringContainsString("WHERE status = ?", $this->mockConnection->lastQuery);
+        $this->assertStringContainsString("WHERE status = ?", $this->getLastSql());
         $this->assertContains('active', $this->mockConnection->lastBindings);
     }
 
     public function testMultipleWhereClauses()
     {
         $this->builder->where('status', 'active')->where('age', '>', 18)->get();
-        $this->assertStringContainsString('AND', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('AND', $this->getLastSql());
         $this->assertCount(2, $this->mockConnection->lastBindings);
     }
 
     public function testOrderBy()
     {
         $this->builder->orderBy('created_at', 'DESC')->get();
-        $this->assertStringContainsString('ORDER BY created_at DESC', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('ORDER BY created_at DESC', $this->getLastSql());
     }
 
     public function testLimit()
     {
         $this->builder->limit(10)->get();
-        $this->assertStringContainsString('LIMIT 10', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('LIMIT 10', $this->getLastSql());
     }
 
     public function testLimitWithOffset()
     {
         $this->builder->limit(10, 20)->get();
-        $this->assertStringContainsString('LIMIT 10', $this->mockConnection->lastQuery);
-        $this->assertStringContainsString('OFFSET 20', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('LIMIT 10', $this->getLastSql());
+        $this->assertStringContainsString('OFFSET 20', $this->getLastSql());
     }
 
     public function testInsertSingleRow()
@@ -123,19 +143,19 @@ class QueryBuilderTest extends TestCase
     public function testJoin()
     {
         $this->builder->join('posts', 'users.id', '=', 'posts.user_id')->get();
-        $this->assertStringContainsString('INNER JOIN posts ON users.id = posts.user_id', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('INNER JOIN posts ON users.id = posts.user_id', $this->getLastSql());
     }
 
     public function testLeftJoin()
     {
         $this->builder->leftJoin('posts', 'users.id', '=', 'posts.user_id')->get();
-        $this->assertStringContainsString('LEFT JOIN posts ON users.id = posts.user_id', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('LEFT JOIN posts ON users.id = posts.user_id', $this->getLastSql());
     }
 
     public function testRightJoin()
     {
         $this->builder->rightJoin('posts', 'users.id', '=', 'posts.user_id')->get();
-        $this->assertStringContainsString('RIGHT JOIN posts ON users.id = posts.user_id', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('RIGHT JOIN posts ON users.id = posts.user_id', $this->getLastSql());
     }
 
     public function testPluck()
@@ -154,7 +174,7 @@ class QueryBuilderTest extends TestCase
     {
         $result = $this->builder->first();
         $this->assertIsArray($result);
-        $this->assertStringContainsString('LIMIT 1', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('LIMIT 1', $this->mockConnection->lastFetchSql);
     }
 
     public function testExists()
@@ -173,7 +193,7 @@ class QueryBuilderTest extends TestCase
             ->limit(10)
             ->get();
 
-        $sql = $this->mockConnection->lastQuery;
+        $sql = $this->getLastSql();
         $this->assertStringContainsString('SELECT id, name, email FROM users', $sql);
         $this->assertStringContainsString('WHERE', $sql);
         $this->assertStringContainsString('ORDER BY', $sql);

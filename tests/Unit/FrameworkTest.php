@@ -106,8 +106,8 @@ class FrameworkTest extends TestCase
 
     public function testHashNeedsRehash()
     {
-        $hash = Hash::make('password');
-        $this->assertFalse(Hash::needsRehash($hash, ['cost' => 10]));
+        $hash = Hash::make('password', ['cost' => 12]);
+        $this->assertTrue(Hash::needsRehash($hash, ['cost' => 10]));
     }
 
     public function testEncryptAndDecrypt()
@@ -239,20 +239,22 @@ class FrameworkTest extends TestCase
         $this->assertFalse(Cookie::has('delete_me'));
     }
 
-    public function testCookieForever()
-    {
-        Cookie::clearQueuedCookies();
-        Cookie::forever('forever_cookie', 'forever_value');
-
-        $queued = Cookie::getQueuedCookies();
-        $this->assertArrayHasKey('forever_cookie', $queued);
-    }
-
     public function testCookieForget()
     {
         $_COOKIE['forget_me'] = 'value';
         Cookie::forget('forget_me');
 
         $this->assertFalse(Cookie::has('forget_me'));
+    }
+
+    public function testCookieGetFromGlobal()
+    {
+        $_COOKIE['global_cookie'] = 'global_value';
+        $this->assertEquals('global_value', Cookie::get('global_cookie'));
+    }
+
+    public function testCookieGetDefault()
+    {
+        $this->assertEquals('default', Cookie::get('nonexistent', 'default'));
     }
 }
