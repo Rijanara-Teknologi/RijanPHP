@@ -4,7 +4,7 @@
 # Cross-platform compatible: Linux, macOS, Windows (Git Bash/WSL/PowerShell)
 # 
 # Usage:
-#   curl -sL https://raw.githubusercontent.com/Rijanara-Teknologi/RijanPHP/main/install.sh | bash
+#   curl -sL https://raw.githubusercontent.com/Rijanara-Teknologi/RijanPHP/stable/install.sh | bash
 
 set -e
 
@@ -208,7 +208,7 @@ echo ""
 # Installation Directory
 # ============================================
 REPO_URL="https://github.com/Rijanara-Teknologi/RijanPHP.git"
-BRANCH="main"
+BRANCH="stable"
 INSTALL_DIR="RijanPHP"
 
 read -p "Installation directory [default: RijanPHP]: " INPUT_DIR
