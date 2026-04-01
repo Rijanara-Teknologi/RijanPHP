@@ -51,7 +51,12 @@ jobs:
 
       - name: PHP Syntax Check
         run: |
-          find Core Master Modules -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+          ERRORS=$(find Core Master Modules -name "*.php" -exec php -l {} \; | grep -v "No syntax errors" || true)
+          if [ -n "$ERRORS" ]; then
+            echo "$ERRORS"
+            exit 1
+          fi
+          echo "All files passed syntax check"
 
   manual-tests:
     runs-on: ubuntu-latest
