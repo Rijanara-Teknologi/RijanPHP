@@ -2,6 +2,9 @@
 
 # RijanPHP Installation Script
 # Cross-platform compatible: Linux, macOS, Windows (Git Bash/WSL/PowerShell)
+# 
+# Usage:
+#   curl -sL https://raw.githubusercontent.com/Rijanara-Teknologi/RijanPHP/main/install.sh | bash
 
 set -e
 
@@ -205,6 +208,7 @@ echo ""
 # Installation Directory
 # ============================================
 REPO_URL="https://github.com/Rijanara-Teknologi/RijanPHP.git"
+BRANCH="main"
 INSTALL_DIR="RijanPHP"
 
 read -p "Installation directory [default: RijanPHP]: " INPUT_DIR
@@ -221,15 +225,15 @@ if [ -d "$INSTALL_DIR" ]; then
     if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
         print_msg "blue" "Removing existing directory..."
         rm -rf "$INSTALL_DIR"
-        git clone "$REPO_URL" "$INSTALL_DIR"
+        git clone -b "$BRANCH" "$REPO_URL" "$INSTALL_DIR"
         print_msg "green" "Repository cloned successfully."
     else
         print_msg "blue" "Using existing directory."
         cd "$INSTALL_DIR"
     fi
 else
-    print_msg "blue" "Cloning repository to '$INSTALL_DIR'..."
-    git clone "$REPO_URL" "$INSTALL_DIR"
+    print_msg "blue" "Cloning repository to '$INSTALL_DIR' (branch: $BRANCH)..."
+    git clone -b "$BRANCH" "$REPO_URL" "$INSTALL_DIR"
     print_msg "green" "Repository cloned successfully."
     cd "$INSTALL_DIR"
 fi
