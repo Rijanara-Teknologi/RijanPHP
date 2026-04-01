@@ -43,9 +43,6 @@ class Rijan
         }
     }
 
-    /**
-     * Set or get the base path of the application.
-     */
     public function base_path(?string $path = null)
     {
         if (is_null($this->base_path)) {
@@ -62,9 +59,6 @@ class Rijan
         return $this->base_path . $path;
     }
 
-    /**
-     * Load environment variables from .env file.
-     */
     protected function loadEnv()
     {
         $file = $this->base_path . '.env';
@@ -94,9 +88,6 @@ class Rijan
         }
     }
 
-    /**
-     * Set or get the configuration path of the application.
-     */
     public function config(?string $path = null)
     {
         if (is_null($path)) {
@@ -107,45 +98,30 @@ class Rijan
         return $this;
     }
 
-    /**
-     * Set the request data.
-     */
     public function request(array $data)
     {
         $this->request = $data;
         return $this;
     }
 
-    /**
-     * Set the server data.
-     */
     public function server(array $data)
     {
         $this->server = $data;
         return $this;
     }
 
-    /**
-     * Set the environment data.
-     */
     public function env(array $data)
     {
         $this->env = $data;
         return $this;
     }
 
-    /**
-     * Set the cookie data.
-     */
     public function cookie(array $data)
     {
         $this->cookie = $data;
         return $this;
     }
 
-    /**
-     * Set the session data.
-     */
     public function session(array $data)
     {
         $this->session = $data;
@@ -174,11 +150,12 @@ class Rijan
         return $composer['version'] ?? '0.0.0';
     }
 
-    /**
-     * Run the application.
-     */
     public function run()
     {
+        // Set timezone from config
+        $timezone = config('app.timezone') ?? 'UTC';
+        date_default_timezone_set($timezone);
+
         // Initialize Request
         \Teguh02\Rijanphp\Core\Http\Request::$instance = new \Teguh02\Rijanphp\Core\Http\Request();
 

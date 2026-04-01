@@ -94,6 +94,18 @@ class QueryBuilderTest extends TestCase
         $this->assertStringContainsString('ORDER BY created_at DESC', $this->getLastSql());
     }
 
+    public function testOrderByInvalidDirection()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->builder->orderBy('created_at', 'INVALID');
+    }
+
+    public function testOrderByRaw()
+    {
+        $this->builder->orderByRaw('FIELD(id, 3, 1, 2)')->get();
+        $this->assertStringContainsString('ORDER BY FIELD(id, 3, 1, 2)', $this->getLastSql());
+    }
+
     public function testLimit()
     {
         $this->builder->limit(10)->get();
@@ -167,7 +179,7 @@ class QueryBuilderTest extends TestCase
     public function testMax()
     {
         $max = $this->builder->max('age');
-        $this->assertStringContainsString('MAX(age)', $this->mockConnection->lastQuery);
+        $this->assertStringContainsString('MAX(age)', $this->mockConnection->lastFetchSql);
     }
 
     public function testFirst()
@@ -181,6 +193,71 @@ class QueryBuilderTest extends TestCase
     {
         $exists = $this->builder->exists();
         $this->assertTrue($exists);
+    }
+
+    public function testCount()
+    {
+        $count = $this->builder->count();
+        $this->assertIsInt($count);
+    }
+
+    public function testSum()
+    {
+        $sum = $this->builder->sum('price');
+        $this->assertNotNull($sum);
+    }
+
+    public function testAvg()
+    {
+        $avg = $this->builder->avg('price');
+        $this->assertNotNull($avg);
+    }
+
+    public function testMin()
+    {
+        $min = $this->builder->min('price');
+        $this->assertNotNull($min);
+    }
+
+    public function testWhereIn()
+    {
+        $this->builder->whereIn('id', [1, 2, 3])->get();
+        $this->assertStringContainsString('IN (?, ?, ?)', $this->getLastSql());
+    }
+
+    public function testWhereNull()
+    {
+        $this->builder->whereNull('deleted_at')->get();
+        $this->assertStringContainsString('IS NULL', $this->getLastSql());
+    }
+
+    public function testWhereNotNull()
+    {
+        $this->builder->whereNotNull('email')->get();
+        $this->assertStringContainsString('IS NOT NULL', $this->getLastSql());
+    }
+
+    public function testLatest()
+    {
+        $this->builder->latest('created_at')->get();
+        $this->assertStringContainsString('ORDER BY created_at DESC', $this->getLastSql());
+    }
+
+    public function testOldest()
+    {
+        $this->builder->oldest('created_at')->get();
+        $this->assertStringContainsString('ORDER BY created_at ASC', $this->getLastSql());
+    }
+
+    public function testValue()
+    {
+        $value = $this->builder->value('name');
+        $this->assertNotNull($value);
+    }
+
+    public function testDoesntExist()
+    {
+        $this->assertFalse($this->builder->doesntExist());
     }
 
     public function testComplexQuery()
@@ -198,5 +275,51 @@ class QueryBuilderTest extends TestCase
         $this->assertStringContainsString('WHERE', $sql);
         $this->assertStringContainsString('ORDER BY', $sql);
         $this->assertStringContainsString('LIMIT', $sql);
+    }
+
+    public function testInvalidOperator()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->builder->where('id', 'INVALID_OP', 1)->get();
+    }
+
+    public function testInvalidJoinType()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->builder->join('posts', 'users.id', '=', 'posts.user_id', 'INVALID')->get();
+    }
+
+    public function testInvalidIdentifier()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->builder->select(['id; DROP TABLE users'])->get();
+    }
+
+    public function testReset()
+    {
+        $this->builder->where('id', 1)->orderBy('name')->limit(10);
+        $this->builder->reset();
+        $this->builder->get();
+        $this->assertStringContainsString('SELECT * FROM users', $this->getLastSql());
+        $this->assertStringNotContainsString('WHERE', $this->getLastSql());
+        $this->assertStringNotContainsString('ORDER BY', $this->getLastSql());
+        $this->assertStringNotContainsString('LIMIT', $this->getLastSql());
+    }
+
+    public function testOrWhere()
+    {
+        $this->builder->where('status', 'active')->orWhere('status', 'pending')->get();
+        $sql = $this->getLastSql();
+        $this->assertStringContainsString('OR', $sql);
+    }
+
+    public function testChunk()
+    {
+        $results = [];
+        $this->builder->chunk(10, function($chunk, $page) use (&$results) {
+            $results[$page] = $chunk;
+            return true;
+        });
+        $this->assertNotEmpty($results);
     }
 }

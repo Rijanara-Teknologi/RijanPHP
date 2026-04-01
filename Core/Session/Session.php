@@ -5,6 +5,7 @@ namespace Teguh02\Rijanphp\Core\Session;
 class Session
 {
     protected static $started = false;
+    protected static $regenerated = false;
 
     public static function start()
     {
@@ -13,10 +14,19 @@ class Session
         }
 
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            $options = [
+                'cookie_lifetime' => 0,
+                'cookie_httponly' => true,
+                'cookie_secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+                'cookie_samesite' => 'Lax',
+                'use_strict_mode' => true,
+                'use_only_cookies' => 1,
+                'hash_function' => 1,
+            ];
+
+            session_start($options);
         }
 
-        // Sync Rijan session with PHP session
         if (isset(\Teguh02\Rijanphp\Core\Rijan::$instance)) {
             \Teguh02\Rijanphp\Core\Rijan::$instance->session = &$_SESSION;
         }
@@ -81,6 +91,7 @@ class Session
             \Teguh02\Rijanphp\Core\Rijan::$instance->session = [];
         }
         self::$started = false;
+        self::$regenerated = false;
     }
 
     public static function all()
@@ -92,10 +103,22 @@ class Session
         return $_SESSION;
     }
 
-    public static function regenerate()
+    public static function regenerate($deleteOldSession = true)
     {
         self::ensureStarted();
-        return session_regenerate_id(true);
+
+        if (self::$regenerated) {
+            return true;
+        }
+
+        $result = session_regenerate_id($deleteOldSession);
+        self::$regenerated = true;
+        return $result;
+    }
+
+    public static function regenerateToken()
+    {
+        return self::regenerate(true);
     }
 
     public static function flash($key, $value)
@@ -108,8 +131,6 @@ class Session
     public static function getFlash($key, $default = null)
     {
         if (self::has($key)) {
-            // Check if it's flash data, if so, mark as old immediately or handle via ageFlashData lifecycle
-            // For simplicity, we just return it. The cleanup happens in ageFlashData next request.
             return self::get($key, $default);
         }
         return $default;
@@ -127,9 +148,37 @@ class Session
         }
     }
 
+    public static function pull($key, $default = null)
+    {
+        $value = self::get($key, $default);
+        self::remove($key);
+        return $value;
+    }
+
+    public static function push($key, $value)
+    {
+        self::ensureStarted();
+        if (!isset($_SESSION[$key]) || !is_array($_SESSION[$key])) {
+            $_SESSION[$key] = [];
+        }
+        $_SESSION[$key][] = $value;
+    }
+
+    public static function increment($key, $amount = 1)
+    {
+        self::ensureStarted();
+        $value = (int) ($_SESSION[$key] ?? 0);
+        $_SESSION[$key] = $value + $amount;
+        return $_SESSION[$key];
+    }
+
+    public static function decrement($key, $amount = 1)
+    {
+        return self::increment($key, -$amount);
+    }
+
     protected static function ageFlashData()
     {
-        // Cycles flash data: new -> old -> deleted
         if (isset($_SESSION['flash_data_old'])) {
             foreach ($_SESSION['flash_data_old'] as $key) {
                 self::remove($key);
