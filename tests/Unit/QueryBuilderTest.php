@@ -203,20 +203,20 @@ class QueryBuilderTest extends TestCase
 
     public function testSum()
     {
-        $sum = $this->builder->sum('price');
-        $this->assertNotNull($sum);
+        $this->builder->sum('price');
+        $this->assertStringContainsString('SUM(price)', $this->mockConnection->lastFetchSql);
     }
 
     public function testAvg()
     {
-        $avg = $this->builder->avg('price');
-        $this->assertNotNull($avg);
+        $this->builder->avg('price');
+        $this->assertStringContainsString('AVG(price)', $this->mockConnection->lastFetchSql);
     }
 
     public function testMin()
     {
-        $min = $this->builder->min('price');
-        $this->assertNotNull($min);
+        $this->builder->min('price');
+        $this->assertStringContainsString('MIN(price)', $this->mockConnection->lastFetchSql);
     }
 
     public function testWhereIn()
