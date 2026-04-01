@@ -98,7 +98,7 @@
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            <span>RijanPHP v<?= \Teguh02\Rijanphp\Core\Rijan::VERSION ?> is now stable!</span>
+            <span>RijanPHP v<?= \Teguh02\Rijanphp\Core\Rijan::version() ?> is now stable!</span>
         </div>
 
         <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">

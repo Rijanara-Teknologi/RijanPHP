@@ -1,0 +1,7 @@
+# Storage Directory
+
+This directory contains application runtime files:
+
+- `app/` - User uploaded files and application data
+- `logs/` - Application log files
+- `framework/cache/` - Cached data and temporary files

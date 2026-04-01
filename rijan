@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * RijanPHP CLI Tool
+ *
+ * Usage: php rijan <command> [options] [arguments]
+ *
+ * Available commands:
+ *   make:module       Create a new module
+ *   make:controller   Create a new controller
+ *   make:model        Create a new model
+ *   make:middleware   Create a new middleware
+ *   make:migration    Create a new migration file
+ *   make:seeder       Create a new seeder file
+ *   make:view         Create a new view file
+ *   migrate           Run all pending migrations
+ *   migrate:rollback  Rollback the last batch of migrations
+ *   migrate:status    Show migration status
+ *   db:seed           Run database seeders
+ *   serve             Start the development server
+ *   key:generate      Generate a new application key
+ *   route:list        List all registered routes
+ *   about             Display framework information
+ *   cache:clear       Clear all cached files
+ *   help              Show help information
+ */
+
+define('RIJANPHP', true);
+
+$basePath = __DIR__;
+
+require $basePath . '/Core/Autoload/Autoloader.php';
+
+(new \Teguh02\Rijanphp\Core\Rijan())
+    ->base_path($basePath)
+    ->config($basePath . '/config');
+
+$app = new \Teguh02\Rijanphp\Core\Console\Application($basePath);
+$app->run();

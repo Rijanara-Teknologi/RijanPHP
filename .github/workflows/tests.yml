@@ -1,0 +1,79 @@
+name: Tests
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev, stable ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3', '8.4']
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: pdo, pdo_sqlite, mbstring, json, curl, openssl
+          coverage: none
+
+      - name: Copy test environment
+        run: cp .env.test .env
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress 
+
+      - name: Run Unit Tests
+        run: vendor/bin/phpunit --testsuite Unit
+
+      - name: Run Feature Tests
+        run: vendor/bin/phpunit --testsuite Feature
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_sqlite, mbstring, json
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress 
+
+      - name: PHP Syntax Check
+        run: |
+          ERRORS=$(find Core Master Modules -name "*.php" -exec php -l {} \; | grep -v "No syntax errors" || true)
+          if [ -n "$ERRORS" ]; then
+            echo "$ERRORS"
+            exit 1
+          fi
+          echo "All files passed syntax check"
+
+  manual-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_sqlite, mbstring, json, curl, openssl
+
+      - name: Run Manual Core Tests
+        run: php tests_manual/test_core.php
+
+      - name: Run Manual Database Tests
+        run: php tests_manual/test_database.php
+
+      - name: Run Manual Security Tests
+        run: php tests_manual/test_security.php

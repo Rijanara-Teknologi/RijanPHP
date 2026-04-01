@@ -154,6 +154,32 @@ class Request
         return $this->server['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 
+    public function ipFromProxy()
+    {
+        $headers = [
+            'HTTP_CF_CONNECTING_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'HTTP_CLIENT_IP',
+        ];
+
+        foreach ($headers as $header) {
+            if (isset($this->server[$header]) && !empty($this->server[$header])) {
+                $ip = $this->server[$header];
+
+                if (strpos($ip, ',') !== false) {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $this->ip();
+    }
+
     /**
      * Get the client's User Agent.
      */

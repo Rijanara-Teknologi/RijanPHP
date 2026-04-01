@@ -20,7 +20,7 @@ class Rijan
     public $db;
     public $log;
 
-    final public const VERSION = '1.3.0';
+    protected static $version = null;
 
     public static $instance;
 
@@ -43,9 +43,6 @@ class Rijan
         }
     }
 
-    /**
-     * Set or get the base path of the application.
-     */
     public function base_path(?string $path = null)
     {
         if (is_null($this->base_path)) {
@@ -62,9 +59,6 @@ class Rijan
         return $this->base_path . $path;
     }
 
-    /**
-     * Load environment variables from .env file.
-     */
     protected function loadEnv()
     {
         $file = $this->base_path . '.env';
@@ -94,9 +88,6 @@ class Rijan
         }
     }
 
-    /**
-     * Set or get the configuration path of the application.
-     */
     public function config(?string $path = null)
     {
         if (is_null($path)) {
@@ -107,45 +98,30 @@ class Rijan
         return $this;
     }
 
-    /**
-     * Set the request data.
-     */
     public function request(array $data)
     {
         $this->request = $data;
         return $this;
     }
 
-    /**
-     * Set the server data.
-     */
     public function server(array $data)
     {
         $this->server = $data;
         return $this;
     }
 
-    /**
-     * Set the environment data.
-     */
     public function env(array $data)
     {
         $this->env = $data;
         return $this;
     }
 
-    /**
-     * Set the cookie data.
-     */
     public function cookie(array $data)
     {
         $this->cookie = $data;
         return $this;
     }
 
-    /**
-     * Set the session data.
-     */
     public function session(array $data)
     {
         $this->session = $data;
@@ -154,14 +130,32 @@ class Rijan
 
     final public static function version(): string
     {
-        return self::VERSION;
+        if (self::$version === null) {
+            self::$version = self::readVersionFromComposer();
+        }
+        return self::$version;
     }
 
-    /**
-     * Run the application.
-     */
+    protected static function readVersionFromComposer(): string
+    {
+        $composerPath = self::$instance && self::$instance->base_path
+            ? self::$instance->base_path('composer.json')
+            : __DIR__ . '/../composer.json';
+
+        if (!file_exists($composerPath)) {
+            return '0.0.0';
+        }
+
+        $composer = json_decode(file_get_contents($composerPath), true);
+        return $composer['version'] ?? '0.0.0';
+    }
+
     public function run()
     {
+        // Set timezone from config
+        $timezone = config('app.timezone') ?? 'UTC';
+        date_default_timezone_set($timezone);
+
         // Initialize Request
         \Teguh02\Rijanphp\Core\Http\Request::$instance = new \Teguh02\Rijanphp\Core\Http\Request();
 

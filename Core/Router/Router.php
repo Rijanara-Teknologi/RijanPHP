@@ -59,7 +59,7 @@ class Router
         $middleware = [];
 
         foreach (self::$groupStack as $group) {
-            $prefix .= ($group['prefix'] ?? '');
+            $prefix .= '/' . ($group['prefix'] ?? '');
             if (isset($group['middleware'])) {
                 $middleware = array_merge($middleware, (array) $group['middleware']);
             }

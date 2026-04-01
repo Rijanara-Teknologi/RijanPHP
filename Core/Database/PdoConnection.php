@@ -8,15 +8,10 @@ use PDOException;
 abstract class PdoConnection implements Connection
 {
     protected $pdo;
+    protected $driver;
 
-    /**
-     * Establish a database connection.
-     */
     abstract public function connect(array $config);
 
-    /**
-     * Execute a query.
-     */
     public function query($sql, $bindings = [])
     {
         try {
@@ -28,57 +23,45 @@ abstract class PdoConnection implements Connection
         }
     }
 
-    /**
-     * Fetch a single row.
-     */
     public function fetch($sql, $bindings = [])
     {
         return $this->query($sql, $bindings)->fetch();
     }
 
-    /**
-     * Fetch all rows.
-     */
     public function fetchAll($sql, $bindings = [])
     {
         return $this->query($sql, $bindings)->fetchAll();
     }
 
-    /**
-     * Get the last inserted ID.
-     */
-    public function lastInsertId()
+    public function lastInsertId($sequence = null)
     {
+        if ($this->driver === 'pgsql' && $sequence !== null) {
+            return $this->pdo->lastInsertId($sequence);
+        }
+
         return $this->pdo->lastInsertId();
     }
 
-    /**
-     * Begin a transaction.
-     */
+    public function getDriver(): string
+    {
+        return $this->driver ?? 'unknown';
+    }
+
     public function beginTransaction()
     {
         return $this->pdo->beginTransaction();
     }
 
-    /**
-     * Commit a transaction.
-     */
     public function commit()
     {
         return $this->pdo->commit();
     }
 
-    /**
-     * Rollback a transaction.
-     */
     public function rollBack()
     {
         return $this->pdo->rollBack();
     }
 
-    /**
-     * Get the PDO instance.
-     */
     public function getPdo()
     {
         return $this->pdo;
