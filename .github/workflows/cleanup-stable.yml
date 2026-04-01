@@ -10,6 +10,7 @@ on:
       - 'public/**'
       - 'config/**'
       - 'rijan'
+      - '.github/workflows/cleanup-stable.yml'
 
 concurrency:
   group: stable-cleanup
