@@ -45,31 +45,47 @@ class QueryBuilder
 
     public function where($column, $operator = null, $value = null)
     {
-        if ($value === null) {
+        if ($value === null && func_num_args() === 2) {
             $value = $operator;
             $operator = '=';
         }
 
-        $this->wheres[] = [
-            'type' => 'AND',
-            'sql' => "{$this->sanitizeIdentifier($column)} {$this->sanitizeOperator($operator)} ?",
-            'binding' => $value,
-        ];
+        if ($value === null) {
+            $this->wheres[] = [
+                'type' => 'AND',
+                'sql' => "{$this->sanitizeIdentifier($column)} IS NULL",
+                'binding' => null,
+            ];
+        } else {
+            $this->wheres[] = [
+                'type' => 'AND',
+                'sql' => "{$this->sanitizeIdentifier($column)} {$this->sanitizeOperator($operator)} ?",
+                'binding' => $value,
+            ];
+        }
         return $this;
     }
 
     public function orWhere($column, $operator = null, $value = null)
     {
-        if ($value === null) {
+        if ($value === null && func_num_args() === 2) {
             $value = $operator;
             $operator = '=';
         }
 
-        $this->wheres[] = [
-            'type' => 'OR',
-            'sql' => "{$this->sanitizeIdentifier($column)} {$this->sanitizeOperator($operator)} ?",
-            'binding' => $value,
-        ];
+        if ($value === null) {
+            $this->wheres[] = [
+                'type' => 'OR',
+                'sql' => "{$this->sanitizeIdentifier($column)} IS NULL",
+                'binding' => null,
+            ];
+        } else {
+            $this->wheres[] = [
+                'type' => 'OR',
+                'sql' => "{$this->sanitizeIdentifier($column)} {$this->sanitizeOperator($operator)} ?",
+                'binding' => $value,
+            ];
+        }
         return $this;
     }
 

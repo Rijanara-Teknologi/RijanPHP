@@ -29,7 +29,6 @@ class Session
                 'cookie_samesite' => 'Lax',
                 'use_strict_mode' => true,
                 'use_only_cookies' => 1,
-                'hash_function' => 1,
             ];
 
             session_start($options);

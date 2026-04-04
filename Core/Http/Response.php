@@ -102,4 +102,20 @@ class Response
     {
         return $this->headers[$name] ?? null;
     }
+
+    /**
+     * Convert the response to string — sends headers and returns content.
+     * Called automatically when the object is cast/echoed as a string.
+     */
+    public function __toString()
+    {
+        if (!headers_sent()) {
+            http_response_code($this->statusCode);
+            foreach ($this->headers as $name => $value) {
+                header("{$name}: {$value}");
+            }
+        }
+
+        return (string) $this->content;
+    }
 }

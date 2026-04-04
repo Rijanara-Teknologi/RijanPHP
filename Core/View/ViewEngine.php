@@ -70,6 +70,23 @@ class ViewEngine
             }
         }
 
+        // Dot-notation resolution: "auth.login" -> try namespace "auth" with view "login"
+        if (strpos($view, '::') === false && strpos($view, '.') !== false) {
+            $dotPos = strpos($view, '.');
+            $prefix = substr($view, 0, $dotPos);
+            $suffix = substr($view, $dotPos + 1);
+
+            if (isset($this->namespaces[$prefix])) {
+                $nameView = str_replace(['.', '/'], DIRECTORY_SEPARATOR, $suffix);
+                $fullPath = $this->namespaces[$prefix] . $nameView . '.php';
+                $fullPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $fullPath);
+
+                if (file_exists($fullPath)) {
+                    return $fullPath;
+                }
+            }
+        }
+
         // Global search
         $name = str_replace(['.', '/'], DIRECTORY_SEPARATOR, $view);
 
@@ -98,7 +115,7 @@ class ViewEngine
 
     public function extends($layout)
     {
-        View:: extends($layout);
+        View::extends($layout);
     }
 
     public function section($name)

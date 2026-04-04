@@ -12,7 +12,7 @@ if (!function_exists('view')) {
 if (!function_exists('extends_layout')) {
     function extends_layout($layout)
     {
-        View:: extends($layout);
+        View::extends($layout);
     }
 }
 
