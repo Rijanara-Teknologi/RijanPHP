@@ -105,3 +105,71 @@ if (!function_exists('storage_path')) {
         return base_path('storage/' . $path);
     }
 }
+
+if (!function_exists('database_path')) {
+    /**
+     * Get the database path (storage/database).
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function database_path($path = '')
+    {
+        return base_path('storage/database/' . $path);
+    }
+}
+
+if (!function_exists('public_path')) {
+    /**
+     * Get the public directory path.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function public_path($path = '')
+    {
+        return base_path('public/' . $path);
+    }
+}
+
+if (!function_exists('asset')) {
+    /**
+     * Generate a URL for a public asset.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function asset($path = '')
+    {
+        // Return as-is if already an absolute URL
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $appUrl = rtrim(env('APP_URL', ''), '/');
+        $path = ltrim($path, '/');
+
+        return $appUrl . '/public/' . $path;
+    }
+}
+
+if (!function_exists('url')) {
+    /**
+     * Generate a full URL for a given path.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function url($path = '')
+    {
+        // Return as-is if already an absolute URL
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $appUrl = rtrim(env('APP_URL', ''), '/');
+        $path = ltrim($path, '/');
+
+        return $appUrl . '/' . $path;
+    }
+}
