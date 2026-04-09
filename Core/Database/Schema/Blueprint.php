@@ -11,6 +11,9 @@ class Blueprint
     /** @var int|null Index of the last added column for fluent modifier chaining */
     protected $currentColumn = null;
 
+    /** @var bool Whether this blueprint is in ALTER TABLE mode */
+    protected $isModifying = false;
+
     public function __construct($table)
     {
         $this->table = $table;
@@ -221,10 +224,31 @@ class Blueprint
         return $this->columns;
     }
 
+    public function setModifying($value)
+    {
+        $this->isModifying = (bool) $value;
+        return $this;
+    }
+
     public function toSql()
     {
         $columns = implode(', ', $this->columns);
         return "CREATE TABLE IF NOT EXISTS {$this->table} ({$columns})";
+    }
+
+    /**
+     * Generate ALTER TABLE ... ADD COLUMN statements for each column.
+     * Used by Schema::table() when isModifying is true.
+     *
+     * @return string[]
+     */
+    public function toAlterSql()
+    {
+        $statements = [];
+        foreach ($this->columns as $column) {
+            $statements[] = "ALTER TABLE {$this->table} ADD COLUMN {$column}";
+        }
+        return $statements;
     }
 }
 

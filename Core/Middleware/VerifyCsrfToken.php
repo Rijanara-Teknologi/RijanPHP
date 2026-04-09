@@ -28,13 +28,24 @@ class VerifyCsrfToken
 
     /**
      * Determine if the HTTP request uses a "read" verb.
+     * Also checks for method spoofing via _method input.
      *
      * @param  array  $request
      * @return bool
      */
     protected function isReading($request)
     {
-        return in_array($request['server']['REQUEST_METHOD'] ?? 'GET', ['HEAD', 'GET', 'OPTIONS']);
+        $method = strtoupper($request['server']['REQUEST_METHOD'] ?? 'GET');
+
+        // Check for method spoofing: POST with _method=PUT/PATCH/DELETE is not a read
+        if ($method === 'POST') {
+            $spoofed = strtoupper($request['input']['_method'] ?? '');
+            if (in_array($spoofed, ['PUT', 'PATCH', 'DELETE'], true)) {
+                return false;
+            }
+        }
+
+        return in_array($method, ['HEAD', 'GET', 'OPTIONS']);
     }
 
     /**

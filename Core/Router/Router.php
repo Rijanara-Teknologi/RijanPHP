@@ -126,9 +126,19 @@ class Router
         }
 
         $uri = self::$namedRoutes[$name];
+        $queryParams = [];
 
         foreach ($params as $key => $value) {
-            $uri = str_replace('{' . $key . '}', $value, $uri);
+            $replaced = str_replace('{' . $key . '}', $value, $uri);
+            if ($replaced !== $uri) {
+                $uri = $replaced;
+            } else {
+                $queryParams[$key] = $value;
+            }
+        }
+
+        if (!empty($queryParams)) {
+            $uri .= '?' . http_build_query($queryParams);
         }
 
         return $uri;

@@ -65,10 +65,20 @@ class Request
 
     /**
      * Get the request method.
+     * Supports HTTP method spoofing via hidden `_method` input for PUT/PATCH/DELETE.
      */
     public function method()
     {
-        return $this->server['REQUEST_METHOD'] ?? 'GET';
+        $method = strtoupper($this->server['REQUEST_METHOD'] ?? 'GET');
+
+        if ($method === 'POST') {
+            $spoofed = strtoupper($this->post['_method'] ?? $this->json['_method'] ?? '');
+            if (in_array($spoofed, ['PUT', 'PATCH', 'DELETE'], true)) {
+                return $spoofed;
+            }
+        }
+
+        return $method;
     }
 
     /**

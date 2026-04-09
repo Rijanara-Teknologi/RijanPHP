@@ -113,6 +113,9 @@ class Client
             $prepared[] = "{$key}: {$value}";
         }
 
+        // Suppress "Expect: 100-continue" which can stall uploads on some servers (Bug #13)
+        $prepared[] = 'Expect:';
+
         return $prepared;
     }
 
@@ -128,8 +131,21 @@ class Client
             $headers[] = 'Content-Type: application/json';
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         } elseif (isset($options['form_params'])) {
-            $payload = http_build_query($options['form_params']);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            // Detect CURLFile instances — if present, pass the array directly so
+            // cURL uses multipart/form-data encoding (Bug #11).
+            $hasFile = false;
+            foreach ($options['form_params'] as $value) {
+                if ($value instanceof \CURLFile) {
+                    $hasFile = true;
+                    break;
+                }
+            }
+
+            if ($hasFile) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $options['form_params']);
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($options['form_params']));
+            }
         } elseif (isset($options['body'])) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
         }
