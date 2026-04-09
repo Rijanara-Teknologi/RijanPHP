@@ -6,6 +6,18 @@ use Closure;
 
 class Schema
 {
+    public static function table($table, Closure $callback)
+    {
+        $blueprint = new Blueprint($table);
+        $blueprint->setModifying(true);
+        $callback($blueprint);
+
+        $statements = $blueprint->toAlterSql();
+        foreach ($statements as $sql) {
+            db()->query($sql);
+        }
+    }
+
     public static function create($table, Closure $callback)
     {
         $blueprint = new Blueprint($table);

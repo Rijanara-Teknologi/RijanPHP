@@ -241,13 +241,26 @@ class QueryBuilder
     protected function aggregate($function, $column)
     {
         $originalSelect = $this->select;
-        $this->select = "{$function}({$this->sanitizeIdentifier($column)}) as aggregate";
+        $originalLimit  = $this->limit;
+        $originalOffset = $this->offset;
 
-        $result = $this->first();
+        $this->select = "{$function}({$this->sanitizeIdentifier($column)}) as aggregate";
+        $this->limit  = null;
+        $this->offset = null;
+
+        $results = $this->get();
 
         $this->select = $originalSelect;
+        $this->limit  = $originalLimit;
+        $this->offset = $originalOffset;
 
-        return $result['aggregate'] ?? null;
+        $result = $results[0] ?? null;
+
+        if ($result === null) {
+            return strtoupper($function) === 'COUNT' ? 0 : null;
+        }
+
+        return $result['aggregate'];
     }
 
     public function insert(array $data)

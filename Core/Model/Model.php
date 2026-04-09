@@ -59,7 +59,6 @@ abstract class Model
     public function where($column, $operator = null, $value = null)
     {
         $this->builder->where($column, $operator, $value);
-        $this->builder->where($column, $operator, $value);
         return $this;
     }
 
