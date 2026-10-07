@@ -119,3 +119,6 @@ if ($response->successful()) {
 
 ## 📄 License
 [MIT License](LICENSE)
+
+
+<!-- Security scan triggered at 2026-10-07 11:44:36 -->
